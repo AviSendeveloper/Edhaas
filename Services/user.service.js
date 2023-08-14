@@ -1,7 +1,4 @@
 const User = require("../Models/User");
-const bcrypt = require("bcrypt");
-
-const bcryptSalt = 5;
 
 /**
  * create new user
@@ -9,12 +6,7 @@ const bcryptSalt = 5;
  * @returns
  */
 exports.createUser = async (details) => {
-    console.log(details);
-    const hashPassword = await bcrypt.hash(details.password, bcryptSalt);
-    const updatedDetails = { ...details, password: hashPassword };
-    const user = await User.create({
-        ...updatedDetails,
-    });
+    const user = await User.create(details);
 
     return user;
 };
@@ -30,4 +22,13 @@ exports.isEmailExist = async (email) => {
         return true;
     }
     return false;
+};
+
+/**
+ * find user with email
+ */
+exports.matchUser = async (email) => {
+    const user = await User.findOne({ email });
+
+    return user;
 };
