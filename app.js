@@ -6,6 +6,7 @@ const {
     routeLoger: logger,
     internalErrorLoger: errorLogger,
 } = require("./Config/WinstonLogger");
+const AuthRoute = require("./Routes/auth.route");
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.get("/hello", (req, res, next) => {
         });
     }
 });
+app.use(AuthRoute);
 
 // Eror logger
 app.use(
