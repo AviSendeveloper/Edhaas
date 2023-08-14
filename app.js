@@ -7,6 +7,9 @@ const {
     internalErrorLoger: errorLogger,
 } = require("./Config/WinstonLogger");
 const AuthRoute = require("./Routes/auth.route");
+const isAuth = require("./Middlewares/isAuth.middleware");
+const isAdmin = require("./Middlewares/isAdmin.middleware");
+const isCreator = require("./Middlewares/isCreator.middleware");
 
 const app = express();
 
@@ -28,7 +31,7 @@ app.get("/", (req, res, next) => {
         data: null,
     });
 });
-app.get("/hello", (req, res, next) => {
+app.get("/hello", isAuth, isAdmin, (req, res, next) => {
     try {
         logger.info("Hello anything");
         throw new Error("Testing");
