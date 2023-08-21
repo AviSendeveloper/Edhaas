@@ -7,6 +7,8 @@ const {
     internalErrorLoger: errorLogger,
 } = require("./Config/WinstonLogger");
 const AuthRoute = require("./Routes/auth.route");
+const ParentRoute = require("./Routes/Parent/index");
+const StudentRoute = require("./Routes/Student/index");
 const isAuth = require("./Middlewares/isAuth.middleware");
 const isAdmin = require("./Middlewares/isAdmin.middleware");
 const isCreator = require("./Middlewares/isCreator.middleware");
@@ -48,6 +50,8 @@ app.get("/hello", isAuth, isAdmin, (req, res, next) => {
     }
 });
 app.use(AuthRoute);
+app.use("/parent", ParentRoute);
+app.use("/student", StudentRoute);
 
 // Eror logger
 app.use(
