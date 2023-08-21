@@ -4,12 +4,6 @@ exports.getParentsMap = async (req, res, next) => {
     try {
         const { studentId } = req.body;
 
-        if (!studentId)
-            return res.json({
-                status: false,
-                erros: [{ msg: "user not found" }],
-            });
-
         const data = await UserMapService.getParentMap(studentId);
 
         return res.json({
