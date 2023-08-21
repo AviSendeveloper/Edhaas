@@ -3,12 +3,13 @@ const UserService = require("../Services/user.service");
 const connectDb = require("../Config/Database");
 
 const userNum = 50;
-const parentIds = [];
 const roles = ["admin", "creator", "student", "parent"];
+let parentIds = [];
+
+const getAllParentIds = async () => await UserService.getAllParents();
 
 const genrateUser = async () => {
     try {
-        console.log("=========================");
         const role = roles[Math.floor(Math.random() * roles.length)];
 
         const user = await UserService.createUser({
@@ -45,7 +46,7 @@ const setParents = (role) => {
     );
     const parents = [];
 
-    for (let i = i; i <= totalParent; i++) {
+    for (let i = 0; i <= totalParent; i++) {
         parents.push({
             parentId: parentIds[Math.floor(Math.random() * parentIds.length)],
             joinedAt: faker.date.past(),
@@ -57,8 +58,8 @@ const setParents = (role) => {
 
 (async () => {
     await connectDb();
+    parentIds = await getAllParentIds();
     for (let i = 0; i < userNum; i++) {
         await genrateUser();
     }
-    console.log("parentIds: ", parentIds);
 })();

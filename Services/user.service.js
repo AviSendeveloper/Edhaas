@@ -32,3 +32,8 @@ exports.matchUser = async (email) => {
 
     return user;
 };
+
+exports.getAllParents = async () => {
+    const parentIds = await User.find({ role: "parent" }).select({ _id: 1 });
+    return parentIds;
+};
