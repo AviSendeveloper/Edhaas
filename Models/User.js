@@ -33,6 +33,30 @@ const userSchema = new Schema(
             type: Boolean,
             required: true,
         },
+        invitaion: {
+            sent: [
+                {
+                    user_id: Schema.Types.ObjectId,
+                    requestDate: Date,
+                    status: {
+                        type: String,
+                        enum: ["pending", "approved", "rejected"],
+                        default: "pending",
+                    },
+                },
+            ],
+            recieved: [
+                {
+                    user_id: Schema.Types.ObjectId,
+                    requestDate: Date,
+                    status: {
+                        type: String,
+                        enum: ["pending", "approved"],
+                        default: "pending",
+                    },
+                },
+            ],
+        },
     },
     {
         timestamps: true,

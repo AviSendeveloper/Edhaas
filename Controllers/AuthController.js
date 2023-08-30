@@ -27,7 +27,7 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     const { email, password } = req.body;
 
-    const user = await UserService.matchUser(email);
+    const user = await UserService.matchUser({ email });
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
     if (!isPasswordMatched) {
@@ -49,6 +49,13 @@ exports.login = async (req, res, next) => {
     return res.status(200).json({
         status: true,
         token: token,
+        userDetails: {
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            imageUrl: user.imageUrl,
+            status: user.status,
+        },
         msg: "Login successfully",
     });
 };

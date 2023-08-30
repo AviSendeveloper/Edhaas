@@ -1,4 +1,5 @@
 const { faker } = require("@faker-js/faker");
+const bcrypt = require("bcrypt");
 const UserService = require("../Services/user.service");
 const connectDb = require("../Config/Database");
 
@@ -6,16 +7,18 @@ const userNum = 50;
 const roles = ["admin", "creator", "student", "parent"];
 let parentIds = [];
 
-const getAllParentIds = async () => await UserService.getAllParents();
+const getAllParentIds = async () => await UserService.getAllParentIds();
 
 const genrateUser = async () => {
     try {
         const role = roles[Math.floor(Math.random() * roles.length)];
 
+        const hashPassword = await bcrypt.hash("123456", 5);
+
         const user = await UserService.createUser({
             name: faker.person.fullName(),
             email: faker.internet.email(),
-            password: "123456",
+            password: hashPassword,
             role: role,
             parents: setParents(role),
             status: 1,

@@ -27,13 +27,49 @@ exports.isEmailExist = async (email) => {
 /**
  * find user with email
  */
-exports.matchUser = async (email) => {
-    const user = await User.findOne({ email });
+exports.matchUser = async (
+    { _id = undefined, email = undefined },
+    { ...select }
+) => {
+    const conditions = {};
+
+    if (_id) conditions._id = _id;
+    if (email) conditions.email = email;
+
+    const user = await User.findOne({ ...conditions }).select(select);
 
     return user;
 };
 
-exports.getAllParents = async () => {
+exports.updateUser = async (id, details) => {
+    const result = await User.findOneAndUpdate(
+        { _id: id },
+        { ...details },
+        { new: true }
+    );
+    return result;
+};
+
+exports.deleteUser = async (_id) => {
+    const result = await User.deleteOne({ _id });
+    return result;
+};
+
+exports.getAllParentIds = async () => {
     const parentIds = await User.find({ role: "parent" }).select({ _id: 1 });
     return parentIds;
+};
+
+exports.getUsersList = async ({ role }) => {
+    const conditions = {};
+
+    // add all conditions here
+    if (role) conditions.role = role;
+
+    const users = await User.find({ ...conditions }).select({
+        invitaion: 0,
+        password: 0,
+    });
+
+    return users;
 };
