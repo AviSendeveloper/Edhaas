@@ -13,10 +13,10 @@ exports.send = async (req, res, next) => {
             message: "Requested email not found",
         });
     }
-    if (userDetails.role === "parent") {
+    if (userDetails.role === "student") {
         return res.json({
             status: false,
-            message: "You can not send invitation to a parents",
+            message: "You can not send invitation to a students",
         });
     }
     // check invitation already send or not
@@ -28,7 +28,7 @@ exports.send = async (req, res, next) => {
     if (isExist) {
         return res.json({
             status: false,
-            message: "Already invitation send to the parents",
+            message: "Already invitation send to the students",
         });
     }
 
@@ -59,11 +59,12 @@ exports.accept = async (req, res, next) => {
     const { senderId } = req.body;
     const userId = req.user._id;
 
-    const invitaionList = UserInvitationService.showList(userId);
+    const invitaionList = await UserInvitationService.showList(userId);
+    console.log("list", invitaionList);
 
     // check sendId exist or not
     const isExist = invitaionList.invitation.find((invitation) => {
-        return invitation.senderId.toString() === senderId;
+        return invitation.senderId._id.toString() === senderId;
     });
 
     if (!isExist) {
@@ -75,15 +76,15 @@ exports.accept = async (req, res, next) => {
 
     const result = await UserInvitationService.acceptRequest(userId, senderId);
 
-    // update sender/student parents array
+    // update sender/student students array
     const updateResponse = await UserService.addParentIdInStudent(
-        senderId,
-        userId
+        userId,
+        senderId
     );
 
     return res.json({
         status: true,
-        data: result,
+        message: "request accepted successfully",
     });
 };
 

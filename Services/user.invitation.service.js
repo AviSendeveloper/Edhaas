@@ -22,7 +22,7 @@ exports.showList = async (userId) => {
     return lists;
 };
 
-exports.accept = async (reciverId, senderId) => {
+exports.acceptRequest = async (reciverId, senderId) => {
     const response = await User.findOneAndUpdate(
         { _id: reciverId, "invitation.senderId": senderId },
         { $set: { "invitation.$.status": "approved" } },
