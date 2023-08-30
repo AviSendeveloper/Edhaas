@@ -12,6 +12,8 @@ const StudentRoute = require("./Routes/Student");
 const AdminRoutes = require("./Routes/Admin");
 const isAuth = require("./Middlewares/isAuth.middleware");
 const isAdmin = require("./Middlewares/isAdmin.middleware");
+const isParent = require("./Middlewares/isParent.middleware");
+const isStudent = require("./Middlewares/isStudent.middleware");
 const isCreator = require("./Middlewares/isCreator.middleware");
 
 const app = express();
@@ -51,8 +53,8 @@ app.get("/hello", isAuth, isAdmin, (req, res, next) => {
     }
 });
 app.use("/api", AuthRoute);
-app.use("/api/parent", isAuth, ParentRoute);
-app.use("/api/student", isAuth, StudentRoute);
+app.use("/api/parent", isAuth, isParent, ParentRoute);
+app.use("/api/student", isAuth, isStudent, StudentRoute);
 app.use("/api/admin", isAuth, isAdmin, AdminRoutes);
 
 // Eror logger

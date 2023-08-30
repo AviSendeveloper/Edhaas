@@ -27,16 +27,13 @@ exports.isEmailExist = async (email) => {
 /**
  * find user with email
  */
-exports.matchUser = async (
-    { _id = undefined, email = undefined },
-    { ...select }
-) => {
+exports.matchUser = async ({ _id = undefined, email = undefined }, select) => {
     const conditions = {};
 
     if (_id) conditions._id = _id;
     if (email) conditions.email = email;
 
-    const user = await User.findOne({ ...conditions }).select(select);
+    const user = await User.findOne({ ...conditions }).select({ ...select });
 
     return user;
 };
@@ -72,4 +69,11 @@ exports.getUsersList = async ({ role }) => {
     });
 
     return users;
+};
+
+exports.addParentIdInStudent = async (studentId, parentId) => {
+    const response = await User.findByIdAndUpdate(
+        { _id: studentId },
+        { $push: { parents: { parentId: parentId, joinedAt: new Date() } } }
+    );
 };
