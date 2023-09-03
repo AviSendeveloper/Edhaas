@@ -18,9 +18,7 @@ module.exports = (req, res, next) => {
 
         return res.status(203).json({
             status: false,
-            errors: {
-                [firstError.path]: firstError.msg,
-            },
+            msg: firstError.msg,
         });
     }
     next();

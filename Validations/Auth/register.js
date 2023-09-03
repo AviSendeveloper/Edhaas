@@ -14,7 +14,7 @@ module.exports = [
             if (response) throw new Error(`${email} already registered`);
             return true;
         }),
-    body("password", "should be atlease 6 charecter long")
+    body("password", "password should be atlease 6 charecter long")
         .trim()
         .isString()
         .isLength({ min: 6 }),
