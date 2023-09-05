@@ -18,16 +18,38 @@ exports.register = async (req, res, next) => {
         status: 1,
     });
 
+    // create token
+    const payload = {
+        _id: response._id,
+        name: response.name,
+        email: response.email,
+        role: response.role,
+    };
+    const token = jwt.createToken(payload, 24);
+
+    // delete _id field
+    const userObject = response.toObject();
+    delete userObject._id;
+
     return res.status(200).json({
         status: true,
-        data: response,
+        token: token,
+        data: userObject,
+        msg: "Register and login successfully",
     });
 };
 
 exports.login = async (req, res, next) => {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     const user = await UserService.matchUser({ email });
+
+    if (user.role !== role) {
+        return res.status(200).json({
+            status: false,
+            msg: "You are not uthorized",
+        });
+    }
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
     if (!isPasswordMatched) {
