@@ -1,6 +1,8 @@
 const { body } = require("express-validator");
 const USerService = require("../../Services/user.service");
 
+const roles = ["admin", "creator", "student", "parent"];
+
 module.exports = [
     body("email", "Invalid email type")
         .trim()
@@ -15,4 +17,10 @@ module.exports = [
         .trim()
         .isString()
         .isLength({ min: 6 }),
+    body("role", "Invalid role type").custom((role) => {
+        if (!roles.includes(role)) {
+            return false;
+        }
+        return true;
+    }),
 ];
