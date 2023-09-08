@@ -29,6 +29,7 @@ exports.register = async (req, res, next) => {
 
     // delete _id field
     const userObject = response.toObject();
+    userObject.id = userObject._id;
     delete userObject._id;
 
     return res.status(200).json({
