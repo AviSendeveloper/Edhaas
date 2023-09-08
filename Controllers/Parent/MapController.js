@@ -8,7 +8,7 @@ exports.getStudentMap = async (req, res, next) => {
 
         return res.json({
             status: true,
-            data: data,
+            data: data[0],
         });
     } catch (error) {
         console.log(error);

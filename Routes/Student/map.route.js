@@ -3,7 +3,7 @@ const MapController = require("../../Controllers/Student/MapController");
 const validator = require("../../Validations/Validator");
 const { parentMap: mapValidation } = require("../../Validations/Student");
 
-Router.get(
+Router.post(
     "/get-parents",
     mapValidation,
     validator,

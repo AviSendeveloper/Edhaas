@@ -8,7 +8,7 @@ exports.getParentsMap = async (req, res, next) => {
 
         return res.json({
             status: true,
-            data: data,
+            data: data[0],
         });
     } catch (error) {
         const errorResponse = {
