@@ -8,5 +8,5 @@ module.exports = [
         if (!isBoardExist) throw new Error("board does not exist");
         return true;
     }),
-    body("board", "Board should not be empty").trim().notEmpty(),
+    body("name", "Name should not be empty").trim().notEmpty(),
 ];
