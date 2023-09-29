@@ -38,6 +38,7 @@ app.use(
 app.get("/", (req, res, next) => {
     logger.info("Anything");
     logger.info("CI/CD testing");
+    logger.info("CI/CD again testing");
     return res.json({
         status: true,
         data: null,
