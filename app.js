@@ -22,7 +22,7 @@ const app = express();
 app.use(
     cors({
         origin: "*",
-        methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+        methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
     })
 );
 app.use(express.urlencoded({ extended: false }));
@@ -37,7 +37,7 @@ app.use(
 // Routes
 app.get("/", (req, res, next) => {
     logger.info("Anything");
-    logger.info("Anything 2");
+    logger.info("CI/CD testing");
     return res.json({
         status: true,
         data: null,
