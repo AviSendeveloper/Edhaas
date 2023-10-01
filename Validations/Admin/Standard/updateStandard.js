@@ -1,5 +1,5 @@
 const { body } = require("express-validator");
-const Standard = require("../../Models/Standard");
+const Standard = require("../../../Models/Standard");
 const { error } = require("winston");
 
 module.exports = [

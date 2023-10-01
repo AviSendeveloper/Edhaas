@@ -1,5 +1,5 @@
 const { body } = require("express-validator");
-const Board = require("../../Models/Board");
+const Board = require("../../../Models/Board");
 const { error } = require("winston");
 
 module.exports = [
