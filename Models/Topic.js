@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const userSchema = new Schema(
+const topicSchema = new Schema(
     {
         name: {
             type: String,
@@ -20,4 +20,15 @@ const userSchema = new Schema(
     }
 );
 
-module.exports = model("Subject", userSchema);
+topicSchema.virtual('id').get(function(){
+    return this._id.toHexString();
+});
+
+topicSchema.set('toJSON', {
+    virtuals: true,
+    transform: function(doc, ret) {
+        delete ret._id;
+    }
+});
+
+module.exports = model("Topic", topicSchema);

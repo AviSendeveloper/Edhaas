@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const userSchema = new Schema(
+const standardSchema = new Schema(
     {
         name: {
             type: String,
@@ -16,4 +16,15 @@ const userSchema = new Schema(
     }
 );
 
-module.exports = model("Standard", userSchema);
+standardSchema.virtual('id').get(function(){
+    return this._id.toHexString();
+});
+
+standardSchema.set('toJSON', {
+    virtuals: true,
+    transform: function(doc, ret) {
+        delete ret._id;
+    }
+});
+
+module.exports = model("Standard", standardSchema);
