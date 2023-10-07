@@ -18,6 +18,7 @@ const userSchema = new Schema(
         },
         imageUrl: {
             type: String,
+            default: null,
         },
         role: {
             type: String,
@@ -53,15 +54,15 @@ const userSchema = new Schema(
     }
 );
 
-userSchema.virtual('id').get(function(){
+userSchema.virtual("id").get(function () {
     return this._id.toHexString();
 });
 
-userSchema.set('toJSON', {
+userSchema.set("toJSON", {
     virtuals: true,
-    transform: function(doc, ret) {
+    transform: function (doc, ret) {
         delete ret._id;
-    }
+    },
 });
 
 module.exports = model("User", userSchema);
