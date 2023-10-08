@@ -7,15 +7,7 @@ const {
     routeLoger: logger,
     internalErrorLoger: errorLogger,
 } = require("./Config/WinstonLogger");
-const AuthRoute = require("./Routes/auth.route");
-const ParentRoute = require("./Routes/Parent");
-const StudentRoute = require("./Routes/Student");
-const AdminRoutes = require("./Routes/Admin");
-const isAuth = require("./Middlewares/isAuth.middleware");
-const isAdmin = require("./Middlewares/isAdmin.middleware");
-const isParent = require("./Middlewares/isParent.middleware");
-const isStudent = require("./Middlewares/isStudent.middleware");
-const isCreator = require("./Middlewares/isCreator.middleware");
+const routes = require("./Routes");
 
 const app = express();
 
@@ -35,35 +27,7 @@ app.use(
 );
 
 // Routes
-app.get("/", (req, res, next) => {
-    logger.info("Anything");
-    logger.info("CI/CD testing");
-    logger.info("CI/CD again testing");
-    return res.json({
-        status: true,
-        data: null,
-    });
-});
-app.get("/hello", isAuth, isAdmin, (req, res, next) => {
-    try {
-        logger.info("Hello anything");
-        throw new Error("Testing");
-        return res.json({
-            status: true,
-            data: "hello",
-        });
-    } catch (error) {
-        errorLogger.error(error);
-        return res.json({
-            status: false,
-            data: error.message,
-        });
-    }
-});
-app.use("/api", AuthRoute);
-app.use("/api/parent", isAuth, isParent, ParentRoute);
-app.use("/api/student", isAuth, isStudent, StudentRoute);
-app.use("/api/admin", isAuth, isAdmin, AdminRoutes);
+app.use(routes);
 
 // Eror logger
 app.use(
