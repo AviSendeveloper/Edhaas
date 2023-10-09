@@ -76,7 +76,6 @@ exports.resetPassword = async (req, res, next) => {
             { password: hashPassword },
             { new: true }
         );
-        console.log("updatedUser: ", updatedUser);
 
         // update isUsed to true for this token
         await ResetPassword.findOneAndUpdate(
