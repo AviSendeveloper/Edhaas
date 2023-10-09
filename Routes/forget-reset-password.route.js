@@ -8,8 +8,8 @@ const {
 
 Router.post(
     "/forget-password",
-    // forgetPassword,
-    // validator,
+    forgetPassword,
+    validator,
     forgetResetPasswordController.forgetPassword
 );
 Router.post(
