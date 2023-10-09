@@ -24,4 +24,4 @@ difficultyLevelSchema.set("toJSON", {
     },
 });
 
-module.exports = model("Board", difficultyLevelSchema);
+module.exports = model("DifficultyLevel", difficultyLevelSchema);

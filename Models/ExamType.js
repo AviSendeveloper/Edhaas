@@ -24,4 +24,4 @@ examTypeSchema.set("toJSON", {
     },
 });
 
-module.exports = model("Board", examTypeSchema);
+module.exports = model("ExamType", examTypeSchema);
