@@ -29,7 +29,7 @@ const questionContentSchema = new Schema(
             default: 0,
         },
         meta: {
-            type: String,
+            examType: String,
             boardId: {
                 type: Schema.Types.ObjectId,
                 ref: "boards",
