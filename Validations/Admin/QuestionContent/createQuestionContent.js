@@ -8,8 +8,8 @@ const DifficultyLevel = require("../../../Models/DifficultyLevel");
 
 const checkField = async (model, fieldValue, targetField = "_id") => {
     try {
-        const isBoardExist = await model.findOne({ [targetField]: fieldValue });
-        if (!isBoardExist) return false;
+        const isDataExist = await model.findOne({ [targetField]: fieldValue });
+        if (!isDataExist) return false;
         return true;
     } catch (error) {
         return false;
@@ -17,59 +17,53 @@ const checkField = async (model, fieldValue, targetField = "_id") => {
 };
 
 module.exports = [
-    body("type", "confirm password does not matched").custom(
-        async (type, { req }) => {
-            if (type == "academic") {
-                const { boardId, standardId, subjectId, topicId } = req.body;
+    body("examType", "exam type require").custom(async (type, { req }) => {
+        if (type == "academic") {
+            const { boardId, standardId, subjectId, topicId } = req.body;
 
-                if (boardId || standardId || subjectId || topicId)
-                    throw new Error(
-                        "boardId, standardId, subjectId and topicId are required"
-                    );
+            if (!boardId || !standardId || !subjectId || !topicId)
+                throw new Error(
+                    "boardId, standardId, subjectId and topicId are required"
+                );
 
-                // Board
-                if (!(await checkField(Board, boardId)))
-                    throw new Error("Invalid board Id");
+            // Board
+            if (!(await checkField(Board, boardId)))
+                throw new Error("Invalid board Id");
 
-                // Standard
-                if (!(await checkField(Standard, standardId)))
-                    throw new Error("Invalid standard Id");
+            // Standard
+            if (!(await checkField(Standard, standardId)))
+                throw new Error("Invalid standard Id");
 
-                // Subject
-                if (!(await checkField(Subject, subjectId)))
-                    throw new Error("Invalid subject Id");
+            // Subject
+            if (!(await checkField(Subject, subjectId)))
+                throw new Error("Invalid subject Id");
 
-                // Topic
-                if (!(await checkField(Topic, topicId)))
-                    throw new Error("Invalid topic Id");
-            } else {
-                // Define validation chain for non-academic type
-                const { ageGroupId, difficultyLevel } = req.body;
+            // Topic
+            if (!(await checkField(Topic, topicId)))
+                throw new Error("Invalid topic Id");
+        } else {
+            // Define validation chain for non-academic type
+            const { ageGroupId, difficultyLevel } = req.body;
 
-                if (!ageGroupId || !difficultyLevel)
-                    throw new Error(
-                        "ageGroupId and difficultyLevel are required"
-                    );
+            if (!ageGroupId || !difficultyLevel)
+                throw new Error("ageGroupId and difficultyLevel are required");
 
-                // AgeGroup
-                if (!(await checkField(AgeGroup, ageGroupId)))
-                    throw new Error("Invalid age group Id");
+            // AgeGroup
+            if (!(await checkField(AgeGroup, ageGroupId)))
+                throw new Error("Invalid age group Id");
 
-                // AgeGroup
-                if (!(await checkField(AgeGroup, ageGroupId, "name")))
-                    throw new Error("Invalid difficulty level");
-            }
-
-            return true;
+            // AgeGroup
+            if (!(await checkField(DifficultyLevel, difficultyLevel, "name")))
+                throw new Error("Invalid difficulty level");
         }
-    ),
+
+        return true;
+    }),
     body("question").trim().exists(),
-    body("options")
-        .trim()
-        .exists()
-        .custom((options) => {
-            if (options.length !== 4) throw new Error("4 option are require");
-            return true;
-        }),
+    body("options").custom((options) => {
+        if (Object.entries(options).length !== 4)
+            throw new Error("4 option are require");
+        return true;
+    }),
     body("correctOption").trim().exists(),
 ];

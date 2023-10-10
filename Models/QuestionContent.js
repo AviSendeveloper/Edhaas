@@ -50,9 +50,8 @@ const questionContentSchema = new Schema(
                 type: Schema.Types.ObjectId,
                 ref: "agegroups",
             },
-            deficultyLavelId: {
-                type: Schema.Types.ObjectId,
-                ref: "difficultylevels",
+            difficultyLevel: {
+                type: String,
             },
         },
         status: {
