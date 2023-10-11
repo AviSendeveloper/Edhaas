@@ -1,11 +1,12 @@
 const Router = require("express").Router();
 const QuestionContentController = require("../../Controllers/Admin/QuestionContentController");
 const validator = require("../../Validations/Validator");
-const { createQuestionContent } = require("../../Validations/Admin");
+const { createUpdateQuestionContent } = require("../../Validations/Admin");
 
+Router.get("/list", QuestionContentController.list);
 Router.post(
     "/create",
-    createQuestionContent,
+    createUpdateQuestionContent,
     validator,
     QuestionContentController.create
 );
