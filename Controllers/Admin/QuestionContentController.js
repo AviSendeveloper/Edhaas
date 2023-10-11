@@ -64,7 +64,6 @@ exports.create = async (req, res) => {
         console.error(error);
         return res.json({
             status: false,
-            data: null,
             msg: "Something went wrong",
         });
     }
@@ -89,9 +88,65 @@ exports.details = async (req, res) => {
     });
 };
 
-exports.update = (req, res) => {
-    return res.json({
-        status: true,
-        data: null,
-    });
+exports.update = async (req, res) => {
+    try {
+        const {
+            questionId,
+            question,
+            options,
+            correctOption,
+            examType,
+            boardId,
+            standardId,
+            subjectId,
+            topicId,
+            ageGroupId,
+            difficultyLevel,
+        } = req.body;
+
+        const { _id: userId, role } = req.user;
+
+        const updatedContent = {
+            question: question,
+            options: {
+                1: options["1"],
+                2: options["2"],
+                3: options["3"],
+                4: options["4"],
+            },
+            correctOption: correctOption,
+            creatorId: userId,
+            isPublic: role == "admin" || role == "creator" ? true : false,
+            totalClicked: 0,
+            meta: {
+                examType: examType,
+                boardId: boardId,
+                standardId: standardId,
+                subjectId: subjectId,
+                topicId: topicId,
+                ageGroupId: ageGroupId,
+                difficultyLevel: difficultyLevel,
+            },
+        };
+
+        const updatedQuestion = await QuestionContent.findByIdAndUpdate(
+            {
+                _id: questionId,
+            },
+            { ...updatedContent },
+            { new: true }
+        );
+
+        return res.json({
+            status: true,
+            data: updatedQuestion,
+            msg: "Question updated successfully",
+        });
+    } catch (error) {
+        console.error(error);
+        return res.json({
+            status: false,
+            msg: "Something went wrong",
+        });
+    }
 };

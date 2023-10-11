@@ -10,7 +10,8 @@ const createAgeGroup = require("./AgeGroup/createAgeGroup");
 const updateAgeGroup = require("./AgeGroup/updateAgeGroup");
 
 // Question
-const createUpdateQuestionContent = require("./QuestionContent/createUpdateQuestionContent");
+const validateQuestionContent = require("./QuestionContent/validateQuestionContent");
+const isQuestionIdExist = require("./QuestionContent/isQuestionIdExist");
 
 module.exports = {
     updateBoard,
@@ -25,5 +26,6 @@ module.exports = {
     updateAgeGroup,
 
     // question
-    createUpdateQuestionContent,
+    validateQuestionContent,
+    isQuestionIdExist,
 };
