@@ -55,10 +55,22 @@ exports.create = async (req, res) => {
     }
 };
 
-exports.edit = (req, res) => {
+exports.details = async (req, res) => {
+    const { questionId } = req.params;
+
+    const questionDetails = await QuestionContent.findOne({
+        _id: questionId,
+    })
+        .populate({ path: "meta.boardId", select: "name" })
+        .populate({ path: "meta.standardId", select: "name" })
+        .populate({ path: "meta.subjectId", select: "name" })
+        .populate({ path: "meta.topicId", select: "name" })
+        .populate({ path: "meta.ageGroupId", select: "name" })
+        .populate({ path: "meta.ageGroupId", select: "startAge endAge" });
+
     return res.json({
         status: true,
-        data: null,
+        data: questionDetails,
     });
 };
 

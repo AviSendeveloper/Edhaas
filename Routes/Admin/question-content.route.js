@@ -9,7 +9,7 @@ Router.post(
     validator,
     QuestionContentController.create
 );
-Router.get("/edit", QuestionContentController.edit);
+Router.get("/details/:questionId", QuestionContentController.details);
 Router.post("/update", QuestionContentController.update);
 
 module.exports = Router;

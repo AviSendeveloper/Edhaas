@@ -32,23 +32,23 @@ const questionContentSchema = new Schema(
             examType: String,
             boardId: {
                 type: Schema.Types.ObjectId,
-                ref: "boards",
+                ref: "Board",
             },
             standardId: {
                 type: Schema.Types.ObjectId,
-                ref: "standards",
+                ref: "Standard",
             },
             subjectId: {
                 type: Schema.Types.ObjectId,
-                ref: "subjects",
+                ref: "Subject",
             },
             topicId: {
                 type: Schema.Types.ObjectId,
-                ref: "topics",
+                ref: "Topic",
             },
             ageGroupId: {
                 type: Schema.Types.ObjectId,
-                ref: "agegroups",
+                ref: "AgeGroup",
             },
             difficultyLevel: {
                 type: String,
