@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.JWT_SECRET;
+const expirationTime = Number(process.env.JWT_TOKEN_EXPIRATION);
 
 const createToken = (payload, hour) => {
-    const expTime = hour * 3600;
+    const expTime = hour ? 3600 * hour : expirationTime;
     const token = jwt.sign({ ...payload }, secret, { expiresIn: expTime });
 
     return token;

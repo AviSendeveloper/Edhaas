@@ -90,7 +90,7 @@ exports.resetPassword = async (req, res, next) => {
             email: updatedUser.email,
             role: updatedUser.role,
         };
-        const token = jwt.createToken(payload, 24);
+        const token = jwt.createToken(payload);
 
         return res.status(200).json({
             status: true,

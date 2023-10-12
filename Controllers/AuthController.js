@@ -67,7 +67,7 @@ exports.login = async (req, res, next) => {
         email: user.email,
         role: user.role,
     };
-    const token = jwt.createToken(payload, 24);
+    const token = jwt.createToken(payload);
 
     return res.status(200).json({
         status: true,
