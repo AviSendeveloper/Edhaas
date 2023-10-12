@@ -1,10 +1,10 @@
 const { body, check } = require("express-validator");
-const Board = require("../../../Models/Board");
-const Standard = require("../../../Models/Standard");
-const Subject = require("../../../Models/Subject");
-const Topic = require("../../../Models/Topic");
-const AgeGroup = require("../../../Models/AgeGroup");
-const DifficultyLevel = require("../../../Models/DifficultyLevel");
+const Board = require("../../Models/Board");
+const Standard = require("../../Models/Standard");
+const Subject = require("../../Models/Subject");
+const Topic = require("../../Models/Topic");
+const AgeGroup = require("../../Models/AgeGroup");
+const DifficultyLevel = require("../../Models/DifficultyLevel");
 
 const checkField = async (model, fieldValue, targetField = "_id") => {
     try {

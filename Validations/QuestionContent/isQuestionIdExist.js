@@ -1,5 +1,5 @@
 const { body } = require("express-validator");
-const QuestionContent = require("../../../Models/QuestionContent");
+const QuestionContent = require("../../Models/QuestionContent");
 
 module.exports = [
     body("questionId", "question id require")

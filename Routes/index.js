@@ -4,6 +4,7 @@ const ForgetResetPasswordRoute = require("./forget-reset-password.route");
 const ParentRoute = require("./Parent");
 const StudentRoute = require("./Student");
 const AdminRoutes = require("./Admin");
+const CreatorRoutes = require("./Creator");
 const isAuth = require("../Middlewares/isAuth.middleware");
 const isAdmin = require("../Middlewares/isAdmin.middleware");
 const isParent = require("../Middlewares/isParent.middleware");
@@ -40,5 +41,6 @@ Router.use("/api", ForgetResetPasswordRoute);
 Router.use("/api/parent", isAuth, isParent, ParentRoute);
 Router.use("/api/student", isAuth, isStudent, StudentRoute);
 Router.use("/api/admin", isAuth, isAdmin, AdminRoutes);
+Router.use("/api/creator", isAuth, isCreator, CreatorRoutes);
 
 module.exports = Router;
