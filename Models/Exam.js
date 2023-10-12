@@ -31,7 +31,7 @@ const examSchema = new Schema(
                 markAchive: String,
             },
         ],
-        totalQuestionNo: Number,
+        totalQuestionNumber: Number,
         questionWeightage: {
             type: Number,
             default: 1,
