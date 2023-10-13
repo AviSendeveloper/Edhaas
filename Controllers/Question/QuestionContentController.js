@@ -1,18 +1,21 @@
 const QuestionContent = require("../../Models/QuestionContent");
+const questionContentService = require("../../Services/question.service");
 
 exports.list = async (req, res) => {
-    const questionList = await QuestionContent.find({})
-        .populate({ path: "meta.boardId", select: "name" })
-        .populate({ path: "meta.standardId", select: "name" })
-        .populate({ path: "meta.subjectId", select: "name" })
-        .populate({ path: "meta.topicId", select: "name" })
-        .populate({ path: "meta.ageGroupId", select: "name" })
-        .populate({ path: "meta.ageGroupId", select: "startAge endAge" });
+    try {
+        const questionList = await questionContentService.questionList();
 
-    return res.json({
-        status: true,
-        data: questionList,
-    });
+        return res.json({
+            status: true,
+            data: questionList,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.json({
+            status: false,
+            msg: "Something went wrong",
+        });
+    }
 };
 
 exports.create = async (req, res) => {
@@ -30,29 +33,18 @@ exports.create = async (req, res) => {
             difficultyLevel,
         } = req.body;
 
-        const { _id: userId, role } = req.user;
-
-        const insertedQuestion = await QuestionContent.create({
-            question: question,
-            options: {
-                1: options["1"],
-                2: options["2"],
-                3: options["3"],
-                4: options["4"],
-            },
-            correctOption: correctOption,
-            creatorId: userId,
-            isPublic: role == "admin" || role == "creator" ? true : false,
-            totalClicked: 0,
-            meta: {
-                examType: examType,
-                boardId: boardId,
-                standardId: standardId,
-                subjectId: subjectId,
-                topicId: topicId,
-                ageGroupId: ageGroupId,
-                difficultyLevel: difficultyLevel,
-            },
+        const insertedQuestion = await questionContentService.createQuestion({
+            question,
+            options,
+            correctOption,
+            examType,
+            boardId,
+            standardId,
+            subjectId,
+            topicId,
+            ageGroupId,
+            difficultyLevel,
+            user: req.user,
         });
 
         return res.json({
@@ -70,22 +62,26 @@ exports.create = async (req, res) => {
 };
 
 exports.details = async (req, res) => {
-    const { questionId } = req.params;
+    try {
+        const { questionId } = req.params;
 
-    const questionDetails = await QuestionContent.findOne({
-        _id: questionId,
-    })
-        .populate({ path: "meta.boardId", select: "name" })
-        .populate({ path: "meta.standardId", select: "name" })
-        .populate({ path: "meta.subjectId", select: "name" })
-        .populate({ path: "meta.topicId", select: "name" })
-        .populate({ path: "meta.ageGroupId", select: "name" })
-        .populate({ path: "meta.ageGroupId", select: "startAge endAge" });
+        const questionDetails = await questionContentService.getQuestionDetails(
+            {
+                questionId,
+            }
+        );
 
-    return res.json({
-        status: true,
-        data: questionDetails,
-    });
+        return res.json({
+            status: true,
+            data: questionDetails,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.json({
+            status: false,
+            msg: "Something went wrong",
+        });
+    }
 };
 
 exports.update = async (req, res) => {
@@ -104,38 +100,20 @@ exports.update = async (req, res) => {
             difficultyLevel,
         } = req.body;
 
-        const { _id: userId, role } = req.user;
-
-        const updatedContent = {
-            question: question,
-            options: {
-                1: options["1"],
-                2: options["2"],
-                3: options["3"],
-                4: options["4"],
-            },
-            correctOption: correctOption,
-            creatorId: userId,
-            isPublic: role == "admin" || role == "creator" ? true : false,
-            totalClicked: 0,
-            meta: {
-                examType: examType,
-                boardId: boardId,
-                standardId: standardId,
-                subjectId: subjectId,
-                topicId: topicId,
-                ageGroupId: ageGroupId,
-                difficultyLevel: difficultyLevel,
-            },
-        };
-
-        const updatedQuestion = await QuestionContent.findByIdAndUpdate(
-            {
-                _id: questionId,
-            },
-            { ...updatedContent },
-            { new: true }
-        );
+        const updatedQuestion = await questionContentService.updateQuestion({
+            questionId,
+            question,
+            options,
+            correctOption,
+            examType,
+            boardId,
+            standardId,
+            subjectId,
+            topicId,
+            ageGroupId,
+            difficultyLevel,
+            user: req.user,
+        });
 
         return res.json({
             status: true,

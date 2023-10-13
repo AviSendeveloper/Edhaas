@@ -48,3 +48,16 @@ exports.initiateExam = async (req, res) => {
         });
     }
 };
+
+exports.examList = async (req, res) => {
+    const {
+        exmaId,
+        examType,
+        boardId,
+        standardId,
+        subjectId,
+        topicId,
+        ageGroupId,
+        difficultyLevel,
+    } = req.body;
+};
