@@ -23,7 +23,7 @@ const examSchema = new Schema(
         },
         questionAnswers: [
             {
-                questionContentId: {
+                questionId: {
                     type: Schema.Types.ObjectId,
                     ref: "QuestionContent",
                 },
@@ -31,6 +31,7 @@ const examSchema = new Schema(
                 markAchive: String,
             },
         ],
+        rejectedQuestions: [],
         totalQuestionNumber: Number,
         questionWeightage: {
             type: Number,

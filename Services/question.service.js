@@ -118,3 +118,38 @@ exports.updateQuestion = async ({
 
     return updatedQuestion;
 };
+
+exports.questionListForExam = async ({
+    examType,
+    boardId,
+    standardId,
+    subjectId,
+    topicId,
+    ageGroupId,
+    difficultyLevel,
+    skipedQuestions,
+}) => {
+    const questions = await QuestionContent.aggregate([
+        // $match
+        {
+            $match: {
+                _id: { $nin: skipedQuestions },
+                "meta.examType": examType,
+                "meta.boardId": boardId,
+                "meta.standardId": standardId,
+                "meta.subjectId": subjectId,
+                "meta.topicId": topicId,
+                "meta.ageGroupId": ageGroupId,
+                "meta.difficultyLevel": difficultyLevel,
+            },
+        },
+        // select random using $sample
+        {
+            $sample: {
+                size: 5,
+            },
+        },
+    ]);
+
+    return questions;
+};
