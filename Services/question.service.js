@@ -146,7 +146,7 @@ exports.questionListForExam = async ({
         // select random using $sample
         {
             $sample: {
-                size: 5,
+                size: 1,
             },
         },
     ]);
