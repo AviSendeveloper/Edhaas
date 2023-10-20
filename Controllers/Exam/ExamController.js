@@ -1,5 +1,6 @@
 const examService = require("../../Services/exam.service");
 const questionService = require("../../Services/question.service");
+const userService = require("../../Services/user.service");
 
 exports.initiateExam = async (req, res) => {
     try {
@@ -99,6 +100,50 @@ exports.selectRejectQuestion = async (req, res) => {
             status: true,
             msg: `question successfully ${
                 isSelected ? "selected" : "rejected"
+            }`,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            status: false,
+            msg: `something went wrong`,
+        });
+    }
+};
+
+exports.assignDeassignStudent = async (req, res) => {
+    try {
+        const { examId, studentId, isAssigning = true } = req.body;
+
+        const checkParentStudentRelation =
+            await userService.checkParentStudentRelation({
+                parentId: req.user._id,
+                studentId: studentId,
+            });
+        if (!checkParentStudentRelation) {
+            return res.json({
+                status: false,
+                msg: "student not belong to you",
+            });
+        }
+
+        const updateExam = await examService.updateStudentAssigning({
+            examId,
+            studentId,
+            isAssigning,
+        });
+
+        if (!updateExam) {
+            return res.json({
+                status: false,
+                msg: "student already assigned",
+            });
+        }
+
+        return res.json({
+            status: true,
+            msg: `student successfully ${
+                isAssigning ? "assigned" : "deassigned"
             }`,
         });
     } catch (error) {

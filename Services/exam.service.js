@@ -73,3 +73,44 @@ exports.updateSelectReject = async ({ examId, questionId, isSelected }) => {
 
     return updatedExam;
 };
+
+exports.updateStudentAssigning = async ({ examId, studentId, isAssigning }) => {
+    let updatedExam = {};
+    if (isAssigning) {
+        const checkStudentExist = await Exam.findOne({
+            _id: examId,
+            assignTo: studentId,
+        });
+        console.log("checkStudentExist: ", checkStudentExist);
+
+        if (checkStudentExist) {
+            return false;
+        }
+
+        await Exam.findByIdAndUpdate(
+            examId,
+            {
+                $push: {
+                    assignTo: studentId,
+                },
+            },
+            {
+                new: true,
+            }
+        );
+    } else {
+        updatedExam = await Exam.findByIdAndUpdate(
+            examId,
+            {
+                $pull: {
+                    assignTo: studentId,
+                },
+            },
+            {
+                new: true,
+            }
+        );
+    }
+
+    return true;
+};

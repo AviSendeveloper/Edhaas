@@ -77,3 +77,16 @@ exports.addParentIdInStudent = async (studentId, parentId) => {
         { $push: { parents: { parentId: parentId, joinedAt: new Date() } } }
     );
 };
+
+exports.checkParentStudentRelation = async ({ parentId, studentId }) => {
+    const studentDetails = await this.matchUser({ _id: studentId });
+
+    if (studentDetails.role !== "student") return false;
+
+    const isParentMatch = studentDetails.parents.find((parent) => {
+        return parent.parentId == parentId;
+    });
+    if (isParentMatch == undefined) return false;
+
+    return true;
+};
