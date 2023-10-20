@@ -40,7 +40,7 @@ exports.initiateExam = async (req, res) => {
     }
 };
 
-exports.examList = async (req, res) => {
+exports.getExamQuestions = async (req, res) => {
     try {
         const {
             examId,
@@ -81,6 +81,31 @@ exports.examList = async (req, res) => {
         return res.json({
             status: false,
             msg: "something went wrong",
+        });
+    }
+};
+
+exports.selectRejectQuestion = async (req, res) => {
+    try {
+        const { examId, questionId, isSelected = true } = req.body;
+
+        const updatedQuestion = await updateSelectReject({
+            examId,
+            questionId,
+            isSelected,
+        });
+
+        return res.json({
+            status: true,
+            msg: `question successfully ${
+                isSelected ? "selected" : "rejected"
+            }`,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            status: false,
+            msg: `something went wrong`,
         });
     }
 };

@@ -40,3 +40,36 @@ exports.examDetails = async (examId) => {
     const details = await Exam.findOne({ _id: examId });
     return details;
 };
+
+exports.updateSelectReject = async ({ examId, questionId, isSelected }) => {
+    let updatedExam = {};
+    if (isSelected) {
+        updatedExam = await Exam.findByIdAndUpdate(
+            examId,
+            {
+                $push: {
+                    questionAnswers: {
+                        questionId,
+                    },
+                },
+            },
+            {
+                new: true,
+            }
+        );
+    } else {
+        updatedExam = await Exam.findByIdAndUpdate(
+            examId,
+            {
+                $push: {
+                    rejectedQuestions: questionId,
+                },
+            },
+            {
+                new: true,
+            }
+        );
+    }
+
+    return updatedExam;
+};
