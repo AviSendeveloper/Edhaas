@@ -89,7 +89,7 @@ exports.selectRejectQuestion = async (req, res) => {
     try {
         const { examId, questionId, isSelected = true } = req.body;
 
-        const updatedQuestion = await updateSelectReject({
+        const updatedQuestion = await examService.updateSelectReject({
             examId,
             questionId,
             isSelected,

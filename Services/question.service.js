@@ -1,4 +1,5 @@
 const QuestionContent = require("../Models/QuestionContent");
+const { ObjectId } = require("mongodb");
 
 exports.questionList = async () => {
     const questionList = await QuestionContent.find({})
@@ -135,11 +136,11 @@ exports.questionListForExam = async ({
             $match: {
                 _id: { $nin: skipedQuestions },
                 "meta.examType": examType,
-                "meta.boardId": boardId,
-                "meta.standardId": standardId,
-                "meta.subjectId": subjectId,
-                "meta.topicId": topicId,
-                "meta.ageGroupId": ageGroupId,
+                "meta.boardId": new ObjectId(boardId),
+                "meta.standardId": new ObjectId(standardId),
+                "meta.subjectId": new ObjectId(subjectId),
+                "meta.topicId": new ObjectId(topicId),
+                "meta.ageGroupId": new ObjectId(ageGroupId),
                 "meta.difficultyLevel": difficultyLevel,
             },
         },
