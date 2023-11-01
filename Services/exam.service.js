@@ -114,3 +114,9 @@ exports.updateStudentAssigning = async ({ examId, studentId, isAssigning }) => {
 
     return true;
 };
+
+exports.list = async (userId) => {
+    const exams = await Exam.find({ creatorId: userId });
+
+    return exams;
+};

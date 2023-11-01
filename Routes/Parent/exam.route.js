@@ -9,4 +9,6 @@ Router.post(
     ExamController.assignDeassignStudent
 );
 
+Router.get("/list", ExamController.examList);
+
 module.exports = Router;

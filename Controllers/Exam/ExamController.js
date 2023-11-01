@@ -154,3 +154,20 @@ exports.assignDeassignStudent = async (req, res) => {
         });
     }
 };
+
+exports.examList = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const exams = await examService.list(userId);
+
+        return res.json({
+            status: true,
+            data: exams,
+        });
+    } catch (error) {
+        return res.json({
+            status: false,
+            msg: "Something went wrong",
+        });
+    }
+};
