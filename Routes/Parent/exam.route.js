@@ -11,4 +11,10 @@ Router.post(
 
 Router.get("/list", ExamController.examList);
 
+Router.get("/get-board", ExamController.getBoard);
+Router.get("/get-standard", ExamController.getStandard);
+Router.get("/get-subject", ExamController.getSubject);
+Router.get("/get-topic", ExamController.getTopic);
+Router.get("/get-age-group", ExamController.getAgeGroup);
+
 module.exports = Router;

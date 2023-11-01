@@ -1,6 +1,11 @@
 const examService = require("../../Services/exam.service");
 const questionService = require("../../Services/question.service");
 const userService = require("../../Services/user.service");
+const Board = require("../../Models/Board");
+const Standard = require("../../Models/Standard");
+const Subject = require("../../Models/Subject");
+const Topic = require("../../Models/Topic");
+const AgeGroup = require("../../Models/AgeGroup");
 
 exports.initiateExam = async (req, res) => {
     try {
@@ -182,6 +187,87 @@ exports.examList = async (req, res) => {
     } catch (error) {
         return res.json({
             status: false,
+            msg: "Something went wrong",
+        });
+    }
+};
+
+exports.getBoard = async (req, res) => {
+    try {
+        const list = await Board.find({});
+
+        return res.json({
+            status: true,
+            data: list,
+        });
+    } catch (error) {
+        return res.json({
+            status: true,
+            msg: "Something went wrong",
+        });
+    }
+};
+
+exports.getStandard = async (req, res) => {
+    try {
+        const list = await Standard.find({});
+
+        return res.json({
+            status: true,
+            data: list,
+        });
+    } catch (error) {
+        return res.json({
+            status: true,
+            msg: "Something went wrong",
+        });
+    }
+};
+
+exports.getSubject = async (req, res) => {
+    try {
+        const list = await Subject.find({});
+
+        return res.json({
+            status: true,
+            data: list,
+        });
+    } catch (error) {
+        return res.json({
+            status: true,
+            msg: "Something went wrong",
+        });
+    }
+};
+
+exports.getTopic = async (req, res) => {
+    try {
+        const subjectId = req.query.subjectId;
+        const list = await Topic.find({ subjectId: subjectId });
+
+        return res.json({
+            status: true,
+            data: list,
+        });
+    } catch (error) {
+        return res.json({
+            status: true,
+            msg: "Something went wrong",
+        });
+    }
+};
+
+exports.getAgeGroup = async (req, res) => {
+    try {
+        const list = await AgeGroup.find({});
+
+        return res.json({
+            status: true,
+            data: list,
+        });
+    } catch (error) {
+        return res.json({
+            status: true,
             msg: "Something went wrong",
         });
     }
