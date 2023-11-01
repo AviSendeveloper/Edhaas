@@ -1,9 +1,28 @@
 const QuestionContent = require("../../Models/QuestionContent");
 const questionContentService = require("../../Services/question.service");
 
+exports.allList = async (req, res) => {
+    try {
+        const allQuestionList = await questionContentService.allQuestionList();
+
+        return res.json({
+            status: true,
+            data: allQuestionList,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.json({
+            status: false,
+            msg: "Something went wrong",
+        });
+    }
+};
+
 exports.list = async (req, res) => {
     try {
-        const questionList = await questionContentService.questionList();
+        const questionList = await questionContentService.questionList(
+            req.user._id
+        );
 
         return res.json({
             status: true,

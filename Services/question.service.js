@@ -1,8 +1,20 @@
 const QuestionContent = require("../Models/QuestionContent");
 const { ObjectId } = require("mongodb");
 
-exports.questionList = async () => {
+exports.allQuestionList = async () => {
     const questionList = await QuestionContent.find({})
+        .populate({ path: "meta.boardId", select: "name" })
+        .populate({ path: "meta.standardId", select: "name" })
+        .populate({ path: "meta.subjectId", select: "name" })
+        .populate({ path: "meta.topicId", select: "name" })
+        .populate({ path: "meta.ageGroupId", select: "name" })
+        .populate({ path: "meta.ageGroupId", select: "startAge endAge" });
+
+    return questionList;
+};
+
+exports.questionList = async (userId) => {
+    const questionList = await QuestionContent.find({ creatorId: userId })
         .populate({ path: "meta.boardId", select: "name" })
         .populate({ path: "meta.standardId", select: "name" })
         .populate({ path: "meta.subjectId", select: "name" })
