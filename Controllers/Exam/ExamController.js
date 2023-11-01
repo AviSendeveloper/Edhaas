@@ -56,6 +56,13 @@ exports.getExamQuestions = async (req, res) => {
 
         const exam = await examService.examDetails(examId);
 
+        if (exam.isExamSetCompleted) {
+            return res.json({
+                status: false,
+                msg: "Exam set Already completed",
+            });
+        }
+
         const usedQuestionIds = exam.questionAnswers.map((quesAns) => {
             return quesAns.questionId;
         });
@@ -88,19 +95,27 @@ exports.getExamQuestions = async (req, res) => {
 
 exports.selectRejectQuestion = async (req, res) => {
     try {
+        let isExamSetCompleted = false;
         const { examId, questionId, isSelected = true } = req.body;
 
-        const updatedQuestion = await examService.updateSelectReject({
+        let updatedQuestion = await examService.updateSelectReject({
             examId,
             questionId,
             isSelected,
         });
 
+        if (updatedQuestion.length == updatedQuestion.totalQuestionNumber) {
+            updatedQuestion = await examService.updateExamComplete(
+                examId,
+                true
+            );
+            isExamSetCompleted = true;
+        }
+
         return res.json({
             status: true,
-            msg: `question successfully ${
-                isSelected ? "selected" : "rejected"
-            }`,
+            msg: `question successfully ${isSelected ? "selected" : "rejected"}
+            ${isExamSetCompleted ? "and exam set completed" : ""}`,
         });
     } catch (error) {
         console.log(error);

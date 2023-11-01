@@ -63,6 +63,10 @@ const examSchema = new Schema(
                 // ref: "User",
             },
         ],
+        isExamSetCompleted: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

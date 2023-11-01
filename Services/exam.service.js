@@ -120,3 +120,11 @@ exports.list = async (userId) => {
 
     return exams;
 };
+
+exports.updateExamComplete = async (examId, status) => {
+    const updatedExam = await Exam.findByIdAndUpdate(examId, {
+        isExamSetCompleted: status,
+    });
+
+    return updatedExam;
+};
