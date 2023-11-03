@@ -8,6 +8,8 @@ const createTopic = require("./Topic/createTopic");
 const updateTopic = require("./Topic/updateTopic");
 const createAgeGroup = require("./AgeGroup/createAgeGroup");
 const updateAgeGroup = require("./AgeGroup/updateAgeGroup");
+const createReward = require("./Reward/create");
+const updateReward = require("./Reward/update");
 
 module.exports = {
     updateBoard,
@@ -20,4 +22,6 @@ module.exports = {
     updateTopic,
     createAgeGroup,
     updateAgeGroup,
+    createReward,
+    updateReward,
 };
