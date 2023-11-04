@@ -154,6 +154,7 @@ exports.questionListForExam = async ({
                 "meta.topicId": new ObjectId(topicId),
                 "meta.ageGroupId": new ObjectId(ageGroupId),
                 "meta.difficultyLevel": difficultyLevel,
+                isPublic: true,
             },
         },
         // select random using $sample

@@ -7,6 +7,43 @@ const Subject = require("../../Models/Subject");
 const Topic = require("../../Models/Topic");
 const AgeGroup = require("../../Models/AgeGroup");
 
+const getRandomQuestion = async ({
+    examType,
+    boardId,
+    standardId,
+    subjectId,
+    topicId,
+    ageGroupId,
+    difficultyLevel,
+    exam = null,
+    examId = null,
+}) => {
+    const examDetails =
+        examId === null ? exam : await examService.examDetails(examId);
+
+    const usedQuestionIds = examDetails.questionAnswers.map((quesAns) => {
+        return quesAns.questionId;
+    });
+
+    const skipedQuestions = [
+        ...usedQuestionIds,
+        ...examDetails.rejectedQuestions,
+    ];
+
+    const selectedQuestions = await questionService.questionListForExam({
+        examType,
+        boardId,
+        standardId,
+        subjectId,
+        topicId,
+        ageGroupId,
+        difficultyLevel,
+        skipedQuestions,
+    });
+
+    return selectedQuestions;
+};
+
 exports.initiateExam = async (req, res) => {
     try {
         const {
@@ -68,13 +105,7 @@ exports.getExamQuestions = async (req, res) => {
             });
         }
 
-        const usedQuestionIds = exam.questionAnswers.map((quesAns) => {
-            return quesAns.questionId;
-        });
-
-        const skipedQuestions = [...usedQuestionIds, ...exam.rejectedQuestions];
-
-        const selectedQuestions = await questionService.questionListForExam({
+        const selectedQuestions = await getRandomQuestion({
             examType,
             boardId,
             standardId,
@@ -82,7 +113,7 @@ exports.getExamQuestions = async (req, res) => {
             topicId,
             ageGroupId,
             difficultyLevel,
-            skipedQuestions,
+            exam,
         });
 
         return res.json({
@@ -101,7 +132,18 @@ exports.getExamQuestions = async (req, res) => {
 exports.selectRejectQuestion = async (req, res) => {
     try {
         let isExamSetCompleted = false;
-        const { examId, questionId, isSelected = true } = req.body;
+        const {
+            examId,
+            examType,
+            boardId,
+            standardId,
+            subjectId,
+            topicId,
+            ageGroupId,
+            difficultyLevel,
+            questionId,
+            isSelected = true,
+        } = req.body;
 
         let updatedQuestion = await examService.updateSelectReject({
             examId,
@@ -109,7 +151,19 @@ exports.selectRejectQuestion = async (req, res) => {
             isSelected,
         });
 
-        if (updatedQuestion.length == updatedQuestion.totalQuestionNumber) {
+        let nextQuestion = {};
+        if (updatedQuestion.length !== updatedQuestion.totalQuestionNumber) {
+            nextQuestion = await getRandomQuestion({
+                examType,
+                boardId,
+                standardId,
+                subjectId,
+                topicId,
+                ageGroupId,
+                difficultyLevel,
+                examId,
+            });
+        } else {
             updatedQuestion = await examService.updateExamComplete(
                 examId,
                 true
@@ -119,8 +173,10 @@ exports.selectRejectQuestion = async (req, res) => {
 
         return res.json({
             status: true,
-            msg: `question successfully ${isSelected ? "selected" : "rejected"}
-            ${isExamSetCompleted ? "and exam set completed" : ""}`,
+            msg: `question successfully ${
+                isSelected ? "selected" : "rejected"
+            } ${isExamSetCompleted ? "and exam set completed" : ""}`,
+            data: !isExamSetCompleted ? nextQuestion : {},
         });
     } catch (error) {
         console.log(error);
