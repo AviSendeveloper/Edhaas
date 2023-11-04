@@ -10,6 +10,10 @@ const isAdmin = require("../Middlewares/isAdmin.middleware");
 const isParent = require("../Middlewares/isParent.middleware");
 const isStudent = require("../Middlewares/isStudent.middleware");
 const isCreator = require("../Middlewares/isCreator.middleware");
+const {
+    routeLoger: logger,
+    internalErrorLoger: errorLogger,
+} = require("../Config/WinstonLogger");
 
 Router.get("/", (req, res, next) => {
     logger.info("Anything");

@@ -1,5 +1,9 @@
 const QuestionContent = require("../../Models/QuestionContent");
 const questionContentService = require("../../Services/question.service");
+const {
+    routeLoger: logger,
+    internalErrorLoger: errorLogger,
+} = require("../../Config/WinstonLogger");
 
 exports.allList = async (req, res) => {
     try {
@@ -10,7 +14,7 @@ exports.allList = async (req, res) => {
             data: allQuestionList,
         });
     } catch (error) {
-        console.error(error);
+        errorLogger.error(error);
         return res.json({
             status: false,
             msg: "Something went wrong",
@@ -29,7 +33,7 @@ exports.list = async (req, res) => {
             data: questionList,
         });
     } catch (error) {
-        console.error(error);
+        errorLogger.error(error);
         return res.json({
             status: false,
             msg: "Something went wrong",
@@ -72,7 +76,7 @@ exports.create = async (req, res) => {
             msg: "Question created successfully",
         });
     } catch (error) {
-        console.error(error);
+        errorLogger.error(error);
         return res.json({
             status: false,
             msg: "Something went wrong",
@@ -95,7 +99,7 @@ exports.details = async (req, res) => {
             data: questionDetails,
         });
     } catch (error) {
-        console.error(error);
+        errorLogger.error(error);
         return res.json({
             status: false,
             msg: "Something went wrong",
@@ -140,7 +144,7 @@ exports.update = async (req, res) => {
             msg: "Question updated successfully",
         });
     } catch (error) {
-        console.error(error);
+        errorLogger.error(error);
         return res.json({
             status: false,
             msg: "Something went wrong",
