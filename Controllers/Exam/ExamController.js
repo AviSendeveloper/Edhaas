@@ -176,7 +176,7 @@ exports.selectRejectQuestion = async (req, res) => {
             msg: `question successfully ${
                 isSelected ? "selected" : "rejected"
             } ${isExamSetCompleted ? "and exam set completed" : ""}`,
-            data: !isExamSetCompleted ? nextQuestion : {},
+            nextQuestion: !isExamSetCompleted ? nextQuestion : {},
         });
     } catch (error) {
         console.log(error);
