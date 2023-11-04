@@ -7,7 +7,7 @@ const {
 } = require("../../Validations/QuestionContent");
 const isAllowUpdateQuestion = require("../../Middlewares/isAllowUpdateQuestion.middleware");
 
-Router.get("/all-list", QuestionContentController.allList);
+// Router.get("/all-list", QuestionContentController.allList);
 Router.get("/list", QuestionContentController.list);
 Router.post(
     "/create",
