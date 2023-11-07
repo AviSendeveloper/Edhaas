@@ -1,3 +1,3 @@
-const difficultyLevel = ["advanced", "intermediate"];
+const difficultyLevel = ["advance", "intermediate"];
 
 module.exports = difficultyLevel;
