@@ -25,4 +25,10 @@ Router.post(
     QuestionContentController.update
 );
 
+Router.get("/get-board", QuestionContentController.getBoard);
+Router.get("/get-standard", QuestionContentController.getStandard);
+Router.get("/get-subject", QuestionContentController.getSubject);
+Router.get("/get-topic", QuestionContentController.getTopic);
+Router.get("/get-age-group", QuestionContentController.getAgeGroup);
+
 module.exports = Router;
