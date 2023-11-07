@@ -5,6 +5,7 @@ const Subject = require("../../Models/Subject");
 const Topic = require("../../Models/Topic");
 const AgeGroup = require("../../Models/AgeGroup");
 const DifficultyLevel = require("../../Models/DifficultyLevel");
+const ExamType = require("../../Models/ExamType");
 
 const checkField = async (model, fieldValue, targetField = "_id") => {
     try {
@@ -18,6 +19,10 @@ const checkField = async (model, fieldValue, targetField = "_id") => {
 
 module.exports = [
     body("examType", "exam type require").custom(async (type, { req }) => {
+        if (!ExamType.includes(type)) {
+            throw new Error("Invalid exam type");
+        }
+
         if (type == "academic") {
             const { boardId, standardId, subjectId, topicId } = req.body;
 
@@ -53,7 +58,7 @@ module.exports = [
                 throw new Error("Invalid age group Id");
 
             // AgeGroup
-            if (!(await checkField(DifficultyLevel, difficultyLevel, "name")))
+            if (!DifficultyLevel.includes(difficultyLevel))
                 throw new Error("Invalid difficulty level");
         }
 
