@@ -6,6 +6,7 @@ const Standard = require("../../Models/Standard");
 const Subject = require("../../Models/Subject");
 const Topic = require("../../Models/Topic");
 const AgeGroup = require("../../Models/AgeGroup");
+const QuestionWeightage = require("../../Models/QuestionWeightage");
 
 const getRandomQuestion = async ({
     examType,
@@ -51,7 +52,6 @@ exports.initiateExam = async (req, res) => {
             description,
             startTime,
             endTime,
-            questionWeightage,
             totalQuestionNumber,
             cutoffMarks,
             totalMarks,
@@ -63,7 +63,7 @@ exports.initiateExam = async (req, res) => {
             description,
             startTime,
             endTime,
-            questionWeightage,
+            questionWeightage: QuestionWeightage,
             totalQuestionNumber,
             cutoffMarks,
             totalMarks,
