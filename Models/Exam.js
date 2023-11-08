@@ -60,7 +60,6 @@ const examSchema = new Schema(
         awardId: [
             {
                 type: Schema.Types.ObjectId,
-                // ref: "User",
             },
         ],
         isExamSetCompleted: {
