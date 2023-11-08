@@ -10,7 +10,7 @@ const QuestionWeightage = require("../../Models/QuestionWeightage");
 const {
     routeLoger: logger,
     internalErrorLoger: errorLogger,
-} = require("./Config/WinstonLogger");
+} = require("../../Config/WinstonLogger");
 
 const getRandomQuestion = async ({
     examType,
