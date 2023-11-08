@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
     const questionDetails = await QuestionContent.findOne({ _id: questionId });
 
     if (
-        questionDetails.creatorId.toString() !== user._id.toString() ||
+        questionDetails.creatorId.toString() !== user._id.toString() &&
         user.role !== "admin"
     ) {
         return res.status(403).json({
