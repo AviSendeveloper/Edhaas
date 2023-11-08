@@ -61,17 +61,6 @@ exports.initiateExam = async (req, res) => {
             totalMarks,
         } = req.body;
 
-        logger.info("title: ");
-        logger.info(title);
-        logger.info("description: ");
-        logger.info(description);
-        logger.info("startTime: ");
-        logger.info(startTime);
-        logger.info("duration: ");
-        logger.info(duration);
-        logger.info("totalQuestionNumber: ");
-        logger.info(totalQuestionNumber);
-
         const intiatedExamDetails = await examService.initiateExam({
             user: req.user,
             title,

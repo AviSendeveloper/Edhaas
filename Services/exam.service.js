@@ -19,12 +19,6 @@ exports.initiateExam = async ({
         const endTime = new Date(
             new Date(startTime).getTime() + duration * 60 * 1000
         );
-        // logger.info("startTime: ");
-        // logger.info(startTime);
-        // logger.info("duration: ");
-        // logger.info(duration);
-        logger.info("endTime: ");
-        logger.info(endTime);
         const intiatedExamDetails = await Exam.create({
             info: {
                 title: title,
