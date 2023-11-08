@@ -1,4 +1,8 @@
 const Exam = require("../Models/Exam");
+const {
+    routeLoger: logger,
+    internalErrorLoger: errorLogger,
+} = require("../Config/WinstonLogger");
 
 exports.initiateExam = async ({
     user,
@@ -11,27 +15,36 @@ exports.initiateExam = async ({
     cutoffMarks,
     totalMarks,
 }) => {
-    const intiatedExamDetails = await Exam.create({
-        info: {
-            title: title,
-            description: description,
-        },
-        creatorId: user._id,
-        timeDetails: {
-            start: startTime,
-            duration: duration,
-            end: new Date(new Date(startTime).getTime() + duration * 60 * 1000),
-        },
-        totalQuestionNumber: totalQuestionNumber,
-        questionWeightage: questionWeightage,
-        totalMarks:
-            totalMarks !== undefined
-                ? totalMarks
-                : totalQuestionNumber * questionWeightage,
-        cutoffMarks: cutoffMarks,
-    });
+    try {
+        const endTime = new Date(
+            new Date(startTime).getTime() + duration * 60 * 1000
+        );
+        logger.info("endTime: ", endTime);
+        const intiatedExamDetails = await Exam.create({
+            info: {
+                title: title,
+                description: description,
+            },
+            creatorId: user._id,
+            timeDetails: {
+                start: startTime,
+                duration: duration,
+                end: endTime,
+            },
+            totalQuestionNumber: totalQuestionNumber,
+            questionWeightage: questionWeightage,
+            totalMarks:
+                totalMarks !== undefined
+                    ? totalMarks
+                    : totalQuestionNumber * questionWeightage,
+            cutoffMarks: cutoffMarks,
+        });
 
-    return intiatedExamDetails;
+        return intiatedExamDetails;
+    } catch (error) {
+        errorLogger.error(error);
+        throw error;
+    }
 };
 
 exports.examDetails = async (examId) => {
