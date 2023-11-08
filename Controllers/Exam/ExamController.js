@@ -7,6 +7,10 @@ const Subject = require("../../Models/Subject");
 const Topic = require("../../Models/Topic");
 const AgeGroup = require("../../Models/AgeGroup");
 const QuestionWeightage = require("../../Models/QuestionWeightage");
+const {
+    routeLoger: logger,
+    internalErrorLoger: errorLogger,
+} = require("./Config/WinstonLogger");
 
 const getRandomQuestion = async ({
     examType,
@@ -75,7 +79,7 @@ exports.initiateExam = async (req, res) => {
             msg: "Exam created successfully",
         });
     } catch (error) {
-        console.log(error);
+        errorLogger.error(error);
         return res.json({
             status: false,
             msg: "something went wrong",
@@ -121,7 +125,7 @@ exports.getExamQuestions = async (req, res) => {
             data: selectedQuestions,
         });
     } catch (error) {
-        console.log(error);
+        errorLogger.error(error);
         return res.json({
             status: false,
             msg: "something went wrong",
@@ -179,7 +183,7 @@ exports.selectRejectQuestion = async (req, res) => {
             nextQuestion: !isExamSetCompleted ? nextQuestion : {},
         });
     } catch (error) {
-        console.log(error);
+        errorLogger.error(error);
         return res.json({
             status: false,
             msg: `something went wrong`,
@@ -223,7 +227,7 @@ exports.assignDeassignStudent = async (req, res) => {
             }`,
         });
     } catch (error) {
-        console.log(error);
+        errorLogger.error(error);
         return res.json({
             status: false,
             msg: `something went wrong`,
