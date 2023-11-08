@@ -19,7 +19,7 @@ const examSchema = new Schema(
         timeDetails: {
             start: Date,
             end: Date,
-            allotedTime: String,
+            duration: Number,
         },
         questionAnswers: [
             {

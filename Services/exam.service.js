@@ -5,7 +5,7 @@ exports.initiateExam = async ({
     title,
     description,
     startTime,
-    endTime,
+    duration,
     questionWeightage,
     totalQuestionNumber,
     cutoffMarks,
@@ -19,10 +19,8 @@ exports.initiateExam = async ({
         creatorId: user._id,
         timeDetails: {
             start: startTime,
-            end: endTime,
-            allotedTime:
-                new Date(endTime).getMinutes() -
-                new Date(startTime).getMinutes(),
+            duration: duration,
+            end: new Date(new Date(startTime).getTime() + duration * 60 * 1000),
         },
         totalQuestionNumber: totalQuestionNumber,
         questionWeightage: questionWeightage,
