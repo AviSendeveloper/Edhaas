@@ -1,8 +1,8 @@
 const QuestionContent = require("../Models/QuestionContent");
 const { ObjectId } = require("mongodb");
 
-exports.allQuestionList = async () => {
-    const questionList = await QuestionContent.find({})
+exports.allQuestionList = async (query = {}) => {
+    const questionList = await QuestionContent.find(query)
         .populate({ path: "meta.boardId", select: "name" })
         .populate({ path: "meta.standardId", select: "name" })
         .populate({ path: "meta.subjectId", select: "name" })

@@ -11,7 +11,34 @@ const {
 
 exports.allList = async (req, res) => {
     try {
-        const allQuestionList = await questionContentService.allQuestionList();
+        const query = {};
+        const { role, creatorId } = req.query;
+        if (role !== "" && role !== undefined) {
+            query.role = role;
+        }
+        if (
+            (req.user._id === creatorId || req.user.role === "admin") &&
+            creatorId !== undefined
+        ) {
+            query.creatorId = creatorId;
+        }
+
+        const dynamicQuery = {};
+        const orConditions = [];
+
+        for (const key in query) {
+            const condition = {};
+            condition[key] = query[key];
+            orConditions.push(condition);
+        }
+
+        if (orConditions.length > 0) {
+            dynamicQuery.$or = orConditions;
+        }
+
+        const allQuestionList = await questionContentService.allQuestionList(
+            dynamicQuery
+        );
 
         return res.json({
             status: true,
