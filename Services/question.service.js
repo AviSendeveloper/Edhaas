@@ -1,16 +1,126 @@
 const QuestionContent = require("../Models/QuestionContent");
 const { ObjectId } = require("mongodb");
 
-exports.allQuestionList = async () => {
-    const questionList = await QuestionContent.find({})
-        .populate({ path: "meta.boardId", select: "name" })
-        .populate({ path: "meta.standardId", select: "name" })
-        .populate({ path: "meta.subjectId", select: "name" })
-        .populate({ path: "meta.topicId", select: "name" })
-        .populate({ path: "meta.ageGroupId", select: "name" })
-        .populate({ path: "meta.ageGroupId", select: "startAge endAge" });
+exports.allQuestionList = async (role = null) => {
+    try {
+        let matchQuery = {};
+        if (role !== null) {
+            matchQuery = {
+                "creatorId.role": role,
+            };
+        }
 
-    return questionList;
+        const questionList = await QuestionContent.aggregate([
+            // lookup/relationship all fields
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "creatorId",
+                    foreignField: "_id",
+                    as: "creatorId",
+                },
+            },
+            {
+                $unwind: "$creatorId",
+            },
+            {
+                $lookup: {
+                    from: "boards",
+                    localField: "meta.boardId",
+                    foreignField: "_id",
+                    as: "meta.boardId",
+                },
+            },
+            {
+                $unwind: "$meta.boardId",
+            },
+            {
+                $lookup: {
+                    from: "standards",
+                    localField: "meta.standardId",
+                    foreignField: "_id",
+                    as: "meta.standardId",
+                },
+            },
+            {
+                $unwind: "$meta.standardId",
+            },
+            {
+                $lookup: {
+                    from: "subjects",
+                    localField: "meta.subjectId",
+                    foreignField: "_id",
+                    as: "meta.subjectId",
+                },
+            },
+            {
+                $unwind: "$meta.subjectId",
+            },
+            {
+                $lookup: {
+                    from: "topics",
+                    localField: "meta.topicId",
+                    foreignField: "_id",
+                    as: "meta.topicId",
+                },
+            },
+            {
+                $unwind: "$meta.topicId",
+            },
+            {
+                $lookup: {
+                    from: "agegroups",
+                    localField: "meta.ageGroupId",
+                    foreignField: "_id",
+                    as: "meta.ageGroupId",
+                },
+            },
+            {
+                $unwind: "$meta.ageGroupId",
+            },
+            // match stage
+            {
+                $match: {
+                    // "creatorId.role": role,
+                    ...matchQuery,
+                },
+            },
+            // project/select fields
+            {
+                $project: {
+                    _id: 1,
+                    question: 1,
+                    options: 1,
+                    correctOption: 1,
+                    isPublic: 1,
+                    totalClicked: 1,
+                    creatorId: {
+                        _id: 1,
+                        name: 1,
+                        role: 1,
+                    },
+                    meta: {
+                        examType: 1,
+                        boardId: { _id: 1, name: 1 },
+                        standardId: { _id: 1, name: 1 },
+                        subjectId: { _id: 1, name: 1 },
+                        topicId: { _id: 1, name: 1 },
+                        ageGroupId: { _id: 1, startAge: 1, endAge: 1 },
+                        difficultyLevel: 1,
+                    },
+                    status: 1,
+                },
+            },
+            {
+                $limit: 1,
+            },
+        ]);
+
+        return questionList;
+    } catch (error) {
+        console.error(error.message);
+        throw error;
+    }
 };
 
 exports.questionList = async (userId) => {
