@@ -11,10 +11,12 @@ const {
 
 exports.allList = async (req, res) => {
     try {
-        const role = req.query.role ? req.query.role : null;
-        const allQuestionList = await questionContentService.allQuestionList(
-            role
-        );
+        const { role, creatorId } = req.query;
+
+        const allQuestionList = await questionContentService.allQuestionList({
+            role,
+            creatorId,
+        });
 
         return res.json({
             status: true,

@@ -1,14 +1,32 @@
 const QuestionContent = require("../Models/QuestionContent");
 const { ObjectId } = require("mongodb");
 
-exports.allQuestionList = async (role = null) => {
+exports.allQuestionList = async ({ role, creatorId }) => {
     try {
+        // let matchQuery = {};
+        // if (query.length !== 0 && query.role !== null) {
+        //     matchQuery = {
+        //         "creatorId.role": query.role,
+        //     };
+        // }
+
+        const conditionArr = [];
         let matchQuery = {};
-        if (role !== null) {
-            matchQuery = {
-                "creatorId.role": role,
-            };
+
+        if (role !== "" && role !== undefined) {
+            conditionArr.push({ "creatorId.role": role });
         }
+        if (creatorId !== "" && creatorId !== undefined) {
+            conditionArr.push({ "creatorId._id": new ObjectId(creatorId) });
+        }
+
+        if (conditionArr.length > 1) {
+            matchQuery.$or = conditionArr;
+        } else {
+            matchQuery = conditionArr[0];
+        }
+
+        console.log(matchQuery);
 
         const questionList = await QuestionContent.aggregate([
             // lookup/relationship all fields
@@ -112,7 +130,7 @@ exports.allQuestionList = async (role = null) => {
                 },
             },
             {
-                $limit: 1,
+                $limit: 10,
             },
         ]);
 
