@@ -1,5 +1,5 @@
-const UserService = require("../../Services/user.service");
-const UserMapService = require("../../Services/user.map.service");
+const UserService = require("../../../Services/user.service");
+const UserMapService = require("../../../Services/user.map.service");
 
 exports.getList = async (req, res, next) => {
     const parents = await UserService.getUsersList({ role: "parent" });

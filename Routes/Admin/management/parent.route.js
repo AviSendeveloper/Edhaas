@@ -1,5 +1,5 @@
 const Router = require("express").Router();
-const ParentManagementController = require("../../Controllers/Admin/ParentManagementController");
+const ParentManagementController = require("../../../Controllers/Admin/Management/ParentController");
 
 Router.get("/list", ParentManagementController.getList);
 Router.get("/details/:parentId", ParentManagementController.getDetails);
