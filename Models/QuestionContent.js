@@ -21,6 +21,10 @@ const questionContentSchema = new Schema(
             ref: "User",
             required: true,
         },
+        updatorId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
         isPublic: {
             type: Boolean,
             default: true,

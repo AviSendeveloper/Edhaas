@@ -235,7 +235,7 @@ exports.updateQuestion = async ({
             4: options["4"],
         },
         correctOption: correctOption,
-        creatorId: userId,
+        updatorId: userId,
         isPublic: role == "admin" || role == "creator" ? true : false,
         totalClicked: 0,
         meta: {
