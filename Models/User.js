@@ -2,9 +2,12 @@ const { Schema, model } = require("mongoose");
 
 const userSchema = new Schema(
     {
-        name: {
+        firstName: {
             type: String,
             required: true,
+        },
+        lastName: {
+            type: String,
         },
         email: {
             type: String,
@@ -15,6 +18,21 @@ const userSchema = new Schema(
         password: {
             type: String,
             required: true,
+        },
+        phoneNumber: {
+            type: String,
+        },
+        board: {
+            type: Schema.Types.ObjectId,
+            ref: "Board",
+        },
+        standard: {
+            type: Schema.Types.ObjectId,
+            ref: "Standard",
+        },
+        ageGroup: {
+            type: Schema.Types.ObjectId,
+            ref: "AgeGroup",
         },
         imageUrl: {
             type: String,
@@ -46,6 +64,12 @@ const userSchema = new Schema(
                     enum: ["pending", "approved", "rejected"],
                     default: "pending",
                 },
+            },
+        ],
+        usedQuestions: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "QuestionContent",
             },
         ],
     },

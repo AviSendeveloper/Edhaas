@@ -5,23 +5,45 @@ const jwt = require("../Util/jwt");
 const bcryptSalt = 5;
 
 exports.register = async (req, res, next) => {
-    const { name, email, password, parents = undefined, role } = req.body;
+    const {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        password,
+        parents = undefined,
+        role,
+        board,
+        standard,
+        ageGroup,
+    } = req.body;
 
     const hashPassword = await bcrypt.hash(password, bcryptSalt);
 
-    const response = await UserService.createUser({
-        name,
+    const userObj = {
+        firstName,
+        lastName,
         email,
         password: hashPassword,
         parents,
         role,
         status: 1,
-    });
+        phoneNumber,
+    };
+
+    if (role === "student") {
+        userObj.board = board;
+        userObj.standard = standard;
+        userObj.ageGroup = ageGroup;
+    }
+
+    const response = await UserService.createUser(userObj);
 
     // create token
     const payload = {
         _id: response._id,
-        name: response.name,
+        firstName: response.firstName,
+        lastName: response.lastName,
         email: response.email,
         role: response.role,
     };

@@ -1,16 +1,20 @@
 const { body } = require("express-validator");
-const USerService = require("../../Services/user.service");
+const UserService = require("../../Services/user.service");
+const mongoose = require("mongoose");
 
 const roles = ["admin", "creator", "student", "parent"];
 
 module.exports = [
-    body("name", "Shuld not be empty").trim().notEmpty().isString(),
+    body("firstName", "firstname should not be empty")
+        .trim()
+        .notEmpty()
+        .isString(),
     body("email", "Invalid email type")
         .trim()
         .isEmail()
         .normalizeEmail()
         .custom(async (email) => {
-            const response = await USerService.isEmailExist(email);
+            const response = await UserService.isEmailExist(email);
             if (response) throw new Error(`${email} already registered`);
             return true;
         }),
@@ -30,6 +34,21 @@ module.exports = [
         if (!roles.includes(role)) {
             return false;
         }
+        return true;
+    }),
+    body("board").custom((board, { req }) => {
+        if (req.body.role === "student" && !mongoose.isValidObjectId(board))
+            throw new Error("Invlid boardId");
+        return true;
+    }),
+    body("standard").custom((board, { req }) => {
+        if (req.body.role === "student" && !mongoose.isValidObjectId(board))
+            throw new Error("Invlid standardId");
+        return true;
+    }),
+    body("ageGroup").custom((board, { req }) => {
+        if (req.body.role === "student" && !mongoose.isValidObjectId(board))
+            throw new Error("Invlid ageGroupId");
         return true;
     }),
 ];
