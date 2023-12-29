@@ -61,7 +61,7 @@ const userSchema = new Schema(
                 requestDate: Date,
                 status: {
                     type: String,
-                    enum: ["pending", "approved", "rejected"],
+                    enum: ["pending", "accepted", "rejected"],
                     default: "pending",
                 },
             },

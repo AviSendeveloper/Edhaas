@@ -22,22 +22,20 @@ exports.showList = async (userId) => {
     return lists;
 };
 
-exports.acceptRequest = async (reciverId, senderId) => {
+exports.acceptRequest = async (userId, senderId) => {
     const response = await User.findOneAndUpdate(
-        { _id: reciverId, "invitation.senderId": senderId },
-        { $set: { "invitation.$.status": "approved" } },
+        { _id: userId, "invitation.senderId": senderId },
+        { $set: { "invitation.$.status": "accepted" } },
         { new: true }
     );
-    console.log("accept", response);
     return response;
 };
 
-exports.rejectRequest = async (reciverId, senderId) => {
+exports.rejectRequest = async (userId, senderId) => {
     const response = await User.findOneAndUpdate(
-        { _id: reciverId, "invitation.senderId": senderId },
-        { $set: { "invitation.$.status": "approved" } },
+        { _id: userId },
+        { $pull: { invitation: { senderId: senderId } } },
         { new: true }
     );
-    console.log("reject", response);
     return response;
 };

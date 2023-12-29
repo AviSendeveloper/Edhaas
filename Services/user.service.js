@@ -71,7 +71,7 @@ exports.getUsersList = async ({ role }) => {
     return users;
 };
 
-exports.addParentIdInStudent = async (studentId, parentId) => {
+exports.addParentIdInStudent = async ({ studentId, parentId }) => {
     const response = await User.findByIdAndUpdate(
         { _id: studentId },
         { $push: { parents: { parentId: parentId, joinedAt: new Date() } } }

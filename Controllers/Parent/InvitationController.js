@@ -6,41 +6,48 @@ exports.send = async (req, res, next) => {
     const senderId = req.user._id;
 
     // check reciver role
-    const userDetails = await UserService.matchUser({ email: reciverEmail });
-    if (!userDetails) {
+    const reciverDetails = await UserService.matchUser({ email: reciverEmail });
+    if (!reciverDetails) {
         return res.json({
             status: false,
             message: "Requested email not found",
         });
     }
-    if (userDetails.role === "parent") {
+    if (reciverDetails.role === "parent") {
         return res.json({
             status: false,
             message: "You can not send invitation to a parents",
         });
     }
     // check invitation already send or not
-    const isExist = userDetails.invitation.find((item) => {
-        console.log(item.senderId, senderId);
-        return item.senderId.toString() === senderId;
+    let responseMessage = "";
+    const isExist = reciverDetails.invitation.find((item) => {
+        if (item.senderId.toString() === senderId) {
+            responseMessage =
+                item.status === "accepted" ? "You already maped" : "";
+            responseMessage =
+                item.status === "pending"
+                    ? "You already send request and it's not accepted yet"
+                    : "";
+            return true;
+        }
+        return false;
     });
 
     if (isExist) {
         return res.json({
             status: false,
-            message: "Already invitation send to the parents",
+            message: responseMessage,
         });
     }
 
     // update student document
-    const response = await UserInvitationService.send(
-        senderId,
-        userDetails._id
-    );
+    await UserInvitationService.send(senderId, reciverDetails._id);
+    responseMessage = "Request send successfully";
 
     return res.json({
         status: true,
-        data: response,
+        message: responseMessage,
     });
 };
 
@@ -76,10 +83,10 @@ exports.accept = async (req, res, next) => {
     const result = await UserInvitationService.acceptRequest(userId, senderId);
 
     // update sender/student parents array
-    const updateResponse = await UserService.addParentIdInStudent(
-        senderId,
-        userId
-    );
+    await UserService.addParentIdInStudent({
+        studentId: senderId,
+        parentId: userId,
+    });
 
     return res.json({
         status: true,
@@ -91,11 +98,11 @@ exports.reject = async (req, res, next) => {
     const { senderId } = req.body;
     const userId = req.user._id;
 
-    const invitaionList = UserInvitationService.showList(userId);
+    const invitaionList = await UserInvitationService.showList(userId);
 
     // check sendId exist or not
     const isExist = invitaionList.invitation.find((invitation) => {
-        return invitation.senderId.toString() === senderId;
+        return invitation.senderId._id.toString() === senderId;
     });
 
     if (!isExist) {
@@ -105,9 +112,10 @@ exports.reject = async (req, res, next) => {
         });
     }
 
-    const result = await UserInvitationService.rejectRequest(userId, senderId);
+    await UserInvitationService.rejectRequest(userId, senderId);
 
     return res.json({
         status: true,
+        message: "Request rejected successfully",
     });
 };

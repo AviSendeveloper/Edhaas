@@ -4,6 +4,6 @@ const InvitationController = require("../../Controllers/Parent/InvitationControl
 Router.post("/send", InvitationController.send);
 Router.get("/list", InvitationController.list);
 Router.post("/accept", InvitationController.accept);
-Router.get("/reject", InvitationController.reject);
+Router.post("/reject", InvitationController.reject);
 
 module.exports = Router;
