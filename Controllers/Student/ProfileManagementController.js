@@ -5,7 +5,9 @@ exports.edit = async (req, res) => {
     const userDetails = await User.findOne({
         _id: req.user._id,
     }).select({
-        name: 1,
+        firstName: 1,
+        lastName: 1,
+        phoneNumber: 1,
         imageUrl: 1,
     });
 

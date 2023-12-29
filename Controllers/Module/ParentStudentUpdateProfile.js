@@ -12,7 +12,7 @@ const User = require("../../Models/User");
  */
 module.exports = async (user, body, file) => {
     try {
-        const { name } = body;
+        const { firstName, lastName, phoneNumber } = body;
         const image = file;
         let updateObj = {};
 
@@ -33,7 +33,9 @@ module.exports = async (user, body, file) => {
             updateObj.imageUrl = image.path;
         }
 
-        updateObj.name = name;
+        updateObj.firstName = firstName;
+        updateObj.lastName = lastName;
+        updateObj.phoneNumber = phoneNumber;
 
         const updatedUserDetails = await User.findByIdAndUpdate(
             user._id,
