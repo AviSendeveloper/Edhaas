@@ -90,3 +90,8 @@ exports.checkParentStudentRelation = async ({ parentId, studentId }) => {
 
     return true;
 };
+
+exports.getUsedQuestions = async (studentId) => {
+    const user = await User.findById(studentId);
+    return user.usedQuestions;
+};

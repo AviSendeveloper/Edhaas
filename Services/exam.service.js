@@ -4,27 +4,41 @@ const {
     internalErrorLoger: errorLogger,
 } = require("../Config/WinstonLogger");
 
-exports.initiateExam = async ({
+exports.createExam = async ({
     user,
+    studentId,
+    examType,
+    difficultyLevel,
+    boardId,
+    standardId,
+    subjectId,
+    topicId,
     title,
     description,
     startTime,
     duration,
-    questionWeightage,
     totalQuestionNumber,
+    questionWeightage,
     cutoffMarks,
-    totalMarks,
 }) => {
     try {
         const endTime = new Date(
             new Date(startTime).getTime() + duration * 60 * 1000
         );
         const intiatedExamDetails = await Exam.create({
+            title: title,
+            description: description,
             info: {
-                title: title,
-                description: description,
+                type: examType,
+                difficultyLevel: difficultyLevel,
+                subject: subjectId,
+                board: boardId,
+                standard: standardId,
+                topic: topicId,
+                ageGroup: null,
             },
             creatorId: user._id,
+            assignTo: studentId,
             timeDetails: {
                 start: startTime,
                 duration: duration,
@@ -32,10 +46,7 @@ exports.initiateExam = async ({
             },
             totalQuestionNumber: totalQuestionNumber,
             questionWeightage: questionWeightage,
-            totalMarks:
-                totalMarks !== undefined
-                    ? totalMarks
-                    : totalQuestionNumber * questionWeightage,
+            totalMarks: totalQuestionNumber * questionWeightage,
             cutoffMarks: cutoffMarks,
         });
 
@@ -80,6 +91,22 @@ exports.updateSelectReject = async ({ examId, questionId, isSelected }) => {
             }
         );
     }
+
+    return updatedExam;
+};
+
+exports.addQuestionsToExam = async ({ examId, questions }) => {
+    const updatedExam = await Exam.findByIdAndUpdate(
+        examId,
+        {
+            $push: {
+                questionAnswers: questions,
+            },
+        },
+        {
+            new: true,
+        }
+    );
 
     return updatedExam;
 };
@@ -131,7 +158,7 @@ exports.list = async (userId) => {
     return exams;
 };
 
-exports.updateExamComplete = async (examId, status) => {
+exports.updateExamComplete = async (examId, status = true) => {
     const updatedExam = await Exam.findByIdAndUpdate(examId, {
         isExamSetCompleted: status,
     });

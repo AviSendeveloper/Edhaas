@@ -1,21 +1,49 @@
 const { Schema, model } = require("mongoose");
+const examType = require("../Models/ExamType");
+const difficultyLevel = require("../Models/DifficultyLevel");
 
 const examSchema = new Schema(
     {
+        title: String,
+        description: String,
         info: {
-            title: String,
-            description: String,
+            type: {
+                type: String,
+                enum: examType,
+            },
+            difficultyLevel: {
+                type: String,
+                enum: difficultyLevel,
+            },
+            board: {
+                type: Schema.Types.ObjectId,
+                ref: "Board",
+            },
+            standard: {
+                type: Schema.Types.ObjectId,
+                ref: "Standard",
+            },
+            ageGroup: {
+                type: Schema.Types.ObjectId,
+                ref: "AgeGroup",
+            },
+            subject: {
+                type: Schema.Types.ObjectId,
+                ref: "Subject",
+            },
+            topic: {
+                type: Schema.Types.ObjectId,
+                ref: "Topic",
+            },
         },
         creatorId: {
             type: Schema.Types.ObjectId,
             ref: "User",
         },
-        assignTo: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "User",
-            },
-        ],
+        assignTo: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+        },
         timeDetails: {
             start: Date,
             end: Date,
@@ -31,7 +59,6 @@ const examSchema = new Schema(
                 markAchive: String,
             },
         ],
-        rejectedQuestions: [],
         totalQuestionNumber: Number,
         questionWeightage: {
             type: Number,

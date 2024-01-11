@@ -12,38 +12,95 @@ const {
     internalErrorLoger: errorLogger,
 } = require("../../Config/WinstonLogger");
 
-const getRandomQuestion = async ({
-    examType,
-    boardId,
-    standardId,
-    subjectId,
-    topicId,
-    ageGroupId,
-    difficultyLevel,
-    exam = null,
-    examId = null,
-}) => {
-    const examDetails =
-        examId === null ? exam : await examService.examDetails(examId);
+exports.createExam = async (req, res) => {
+    try {
+        const {
+            examType,
+            difficultyLevel,
+            studentId,
+            boardId,
+            standardId,
+            subjectId,
+            topicId,
+            ageGroupId,
+            title,
+            description,
+            startTime,
+            duration,
+            totalQuestionNumber,
+            cutoffMarks,
+        } = req.body;
 
-    const usedQuestionIds = examDetails.questionAnswers.map((quesAns) => {
-        return quesAns.questionId;
-    });
+        const checkParentStudentRelation =
+            await userService.checkParentStudentRelation({
+                parentId: req.user._id,
+                studentId: studentId,
+            });
+        if (!checkParentStudentRelation)
+            throw new Error("student not belong to you");
 
-    const skipedQuestions = [
-        ...usedQuestionIds,
-        ...examDetails.rejectedQuestions,
-    ];
+        let exam = await examService.createExam({
+            user: req.user,
+            studentId,
+            examType,
+            difficultyLevel,
+            boardId,
+            standardId,
+            subjectId,
+            topicId,
+            ageGroupId,
+            title,
+            description,
+            startTime,
+            duration,
+            totalQuestionNumber,
+            questionWeightage: QuestionWeightage,
+            cutoffMarks,
+        });
+
+        // Generate questions for exam
+        const selectedQuestions = await getRandomQuestion(exam);
+
+        // check selected questions is equal to total question requested
+        if (selectedQuestions.length != totalQuestionNumber)
+            throw new Error("not enough questions");
+
+        // Add questions to exam
+        exam = await examService.addQuestionsToExam({
+            examId: exam._id,
+            questions: selectedQuestions,
+        });
+
+        /**
+         * assign point to question creator for selecting questions
+         * need to add cod
+         */
+        // selectedQuestions.forEach(async (question) => {
+        //     const questionCreator = await User.findById(question.creatorId);
+        //     if (questionCreator) {
+        //         questionCreator.points += 1; // Increase the points of the question creator by 1
+        //         await questionCreator.save();
+        //     }
+        // });
+
+        return res.status(201).send({
+            status: true,
+            msg: "Exam created successfully",
+        });
+    } catch (error) {
+        errorLogger.error(error);
+        return res.status(500).send({
+            status: false,
+            msg: error.message,
+        });
+    }
+};
+const getRandomQuestion = async (exam) => {
+    const usedQuestionIds = await User.getUsedQuestions(exam.assignTo);
 
     const selectedQuestions = await questionService.questionListForExam({
-        examType,
-        boardId,
-        standardId,
-        subjectId,
-        topicId,
-        ageGroupId,
-        difficultyLevel,
-        skipedQuestions,
+        exam,
+        usedQuestionIds,
     });
 
     return selectedQuestions;
@@ -133,9 +190,15 @@ exports.getExamQuestions = async (req, res) => {
     }
 };
 
+/**
+ * Selects or rejects a question for an exam and returns the next question or marks the exam as complete.
+ * @param {*} req - The request object.
+ * @param {*} res - The response object.
+ */
 exports.selectRejectQuestion = async (req, res) => {
     try {
         let isExamSetCompleted = false;
+
         const {
             examId,
             examType,
@@ -149,6 +212,7 @@ exports.selectRejectQuestion = async (req, res) => {
             isSelected = true,
         } = req.body;
 
+        // Update the selected/rejected status of the question
         let updatedQuestion = await examService.updateSelectReject({
             examId,
             questionId,
@@ -156,7 +220,10 @@ exports.selectRejectQuestion = async (req, res) => {
         });
 
         let nextQuestion = {};
+
+        // Check if there are more questions remaining in the exam
         if (updatedQuestion.length !== updatedQuestion.totalQuestionNumber) {
+            // Get a random question for the exam
             nextQuestion = await getRandomQuestion({
                 examType,
                 boardId,
@@ -168,6 +235,7 @@ exports.selectRejectQuestion = async (req, res) => {
                 examId,
             });
         } else {
+            // Mark the exam as complete
             updatedQuestion = await examService.updateExamComplete(
                 examId,
                 true
@@ -177,7 +245,7 @@ exports.selectRejectQuestion = async (req, res) => {
 
         return res.json({
             status: true,
-            msg: `question successfully ${
+            msg: `Question successfully ${
                 isSelected ? "selected" : "rejected"
             } ${isExamSetCompleted ? "and exam set completed" : ""}`,
             nextQuestion: !isExamSetCompleted ? nextQuestion : {},
@@ -186,7 +254,7 @@ exports.selectRejectQuestion = async (req, res) => {
         errorLogger.error(error);
         return res.json({
             status: false,
-            msg: `something went wrong`,
+            msg: `Something went wrong`,
         });
     }
 };
