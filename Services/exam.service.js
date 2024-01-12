@@ -1,8 +1,11 @@
 const Exam = require("../Models/Exam");
+const userService = require("./user.service");
+const questionService = require("./question.service");
 const {
     routeLoger: logger,
     internalErrorLoger: errorLogger,
 } = require("../Config/WinstonLogger");
+const { default: mongoose } = require("mongoose");
 
 exports.createExam = async ({
     user,
@@ -54,6 +57,69 @@ exports.createExam = async ({
     } catch (error) {
         errorLogger.error(error);
         throw error;
+    }
+};
+
+exports.assignReward = async ({ examId, rewardId }) => {
+    const updatedExam = await Exam.findByIdAndUpdate(
+        examId,
+        {
+            $push: {
+                rewards: rewardId,
+            },
+        },
+        {
+            new: true,
+        }
+    );
+    return updatedExam;
+};
+
+exports.setCompleted = async ({ examId }) => {
+    try {
+        const exam = await Exam.findById(examId);
+        const questionIds = exam.questionAnswers.map((item) => item.questionId);
+        const studentId = exam.assignTo;
+
+        // update usedQuestion for studentId in transaction
+        try {
+            console.log("session started");
+            session = await mongoose.startSession();
+            session.startTransaction();
+
+            // update usedQuestion for studentId
+            const updateUsedQuestions = await userService.updateUsedQuestions(
+                studentId,
+                questionIds
+            );
+            if (!updateUsedQuestions)
+                throw new Error("failed to update used questions");
+
+            // increment total click in question
+            const updateClicks =
+                await questionService.updateClickMultiQuestions({
+                    questionIds,
+                });
+
+            if (!updateClicks) throw new Error("failed to update clicks");
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            await session.endSession();
+            console.log("session ended");
+        }
+
+        // update exam as completed
+        await Exam.findByIdAndUpdate(examId, {
+            $set: {
+                isCompleted: true,
+            },
+        });
+        return true;
+    } catch (error) {
+        errorLogger.error(error);
+        return false;
     }
 };
 

@@ -286,3 +286,16 @@ exports.questionListForExam = async ({ exam, usedQuestionIds }) => {
 
     return questions;
 };
+
+exports.updateClickMultiQuestions = async ({ questionId, value = 1 }) => {
+    try {
+        await QuestionContent.findOneAndUpdate(
+            { _id: questionId },
+            { $inc: { totalClicked: value } },
+            { new: true }
+        );
+        return true;
+    } catch (error) {
+        return false;
+    }
+};

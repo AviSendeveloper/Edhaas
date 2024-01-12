@@ -95,3 +95,16 @@ exports.getUsedQuestions = async (studentId) => {
     const user = await User.findById(studentId);
     return user.usedQuestions;
 };
+
+exports.updateUsedQuestions = async (studentId, questionIds) => {
+    try {
+        const response = await User.findByIdAndUpdate(
+            { _id: studentId },
+            { $push: { usedQuestions: { $each: questionIds } } }
+        );
+
+        return true;
+    } catch (error) {
+        return false;
+    }
+};

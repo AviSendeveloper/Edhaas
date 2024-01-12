@@ -9,6 +9,9 @@ const ExamController = require("../../Controllers/Exam/ExamController");
 //     ExamController.assignDeassignStudent
 // );
 Router.post("/create", ExamController.createExam);
+Router.post("/assign-reward", ExamController.assignReward);
+// Router.post("/payment", ExamController.payment);
+Router.post("/set-completed", ExamController.setCompleted);
 
 Router.get("/list", ExamController.examList);
 

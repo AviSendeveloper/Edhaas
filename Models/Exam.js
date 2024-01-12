@@ -84,9 +84,10 @@ const examSchema = new Schema(
             type: Boolean,
             default: false,
         },
-        awardId: [
+        rewardId: [
             {
                 type: Schema.Types.ObjectId,
+                ref: "Reward",
             },
         ],
         isExamSetCompleted: {

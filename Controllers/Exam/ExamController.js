@@ -86,6 +86,7 @@ exports.createExam = async (req, res) => {
         return res.status(201).send({
             status: true,
             msg: "Exam created successfully",
+            questions: selectedQuestions,
         });
     } catch (error) {
         errorLogger.error(error);
@@ -95,6 +96,47 @@ exports.createExam = async (req, res) => {
         });
     }
 };
+
+exports.assignReward = async (req, res) => {
+    try {
+        const { examId, rewardId } = req.body;
+
+        const assignReward = await examService.assignReward({
+            examId,
+            rewardId,
+        });
+
+        return res.json({
+            status: true,
+            msg: "Reward assigned successfully",
+        });
+    } catch (error) {
+        errorLogger.error(error);
+        return res.status(500).send({
+            status: false,
+            msg: error.message,
+        });
+    }
+};
+
+exports.setCompleted = async (req, res) => {
+    try {
+        const { examId } = req.body;
+        const setCompleted = await examService.setCompleted({ examId });
+        if (!setCompleted) throw new Error("failed to set completed");
+        return res.json({
+            status: true,
+            msg: "Exam set completed successfully",
+        });
+    } catch (error) {
+        errorLogger.error(error);
+        return res.status(500).send({
+            status: false,
+            msg: error.message,
+        });
+    }
+};
+
 const getRandomQuestion = async (exam) => {
     const usedQuestionIds = await User.getUsedQuestions(exam.assignTo);
 
