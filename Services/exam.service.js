@@ -14,6 +14,7 @@ exports.createExam = async ({
     difficultyLevel,
     boardId,
     standardId,
+    ageGroupId,
     subjectId,
     topicId,
     title,
@@ -38,7 +39,7 @@ exports.createExam = async ({
                 board: boardId,
                 standard: standardId,
                 topic: topicId,
-                ageGroup: null,
+                ageGroup: ageGroupId,
             },
             creatorId: user._id,
             assignTo: studentId,
@@ -102,6 +103,7 @@ exports.setCompleted = async ({ examId }) => {
                 });
 
             if (!updateClicks) throw new Error("failed to update clicks");
+            await session.commitTransaction();
         } catch (error) {
             await session.abortTransaction();
             throw error;

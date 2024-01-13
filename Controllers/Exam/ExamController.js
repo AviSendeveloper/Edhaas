@@ -11,18 +11,18 @@ const {
     routeLoger: logger,
     internalErrorLoger: errorLogger,
 } = require("../../Config/WinstonLogger");
+const { default: mongoose } = require("mongoose");
 
 exports.createExam = async (req, res) => {
     try {
+        let exam;
+        // let session;
         const {
             examType,
             difficultyLevel,
             studentId,
-            boardId,
-            standardId,
             subjectId,
             topicId,
-            ageGroupId,
             title,
             description,
             startTime,
@@ -36,40 +36,53 @@ exports.createExam = async (req, res) => {
                 parentId: req.user._id,
                 studentId: studentId,
             });
-        if (!checkParentStudentRelation)
+        if (!checkParentStudentRelation.status)
             throw new Error("student not belong to you");
 
-        let exam = await examService.createExam({
-            user: req.user,
-            studentId,
-            examType,
-            difficultyLevel,
-            boardId,
-            standardId,
-            subjectId,
-            topicId,
-            ageGroupId,
-            title,
-            description,
-            startTime,
-            duration,
-            totalQuestionNumber,
-            questionWeightage: QuestionWeightage,
-            cutoffMarks,
-        });
+        console.log("session started");
+        session = await mongoose.startSession();
+        try {
+            session.startTransaction();
+            exam = await examService.createExam({
+                user: req.user,
+                studentId,
+                examType,
+                difficultyLevel,
+                boardId: checkParentStudentRelation.studentDetails.board,
+                standardId: checkParentStudentRelation.studentDetails.standard,
+                ageGroupId: checkParentStudentRelation.studentDetails.ageGroup,
+                subjectId,
+                topicId,
+                title,
+                description,
+                startTime,
+                duration,
+                totalQuestionNumber,
+                questionWeightage: QuestionWeightage,
+                cutoffMarks,
+            });
 
-        // Generate questions for exam
-        const selectedQuestions = await getRandomQuestion(exam);
+            // Generate questions for exam
+            const selectedQuestions = await getRandomQuestion(exam);
 
-        // check selected questions is equal to total question requested
-        if (selectedQuestions.length != totalQuestionNumber)
-            throw new Error("not enough questions");
+            // check selected questions is equal to total question requested
+            if (selectedQuestions.length != totalQuestionNumber)
+                throw new Error("not enough questions");
 
-        // Add questions to exam
-        exam = await examService.addQuestionsToExam({
-            examId: exam._id,
-            questions: selectedQuestions,
-        });
+            // Add questions to exam
+            exam = await examService.addQuestionsToExam({
+                examId: exam._id,
+                questions: selectedQuestions,
+            });
+
+            await session.commitTransaction();
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            await session.endSession();
+            console.log("session ended");
+        }
 
         /**
          * assign point to question creator for selecting questions
@@ -138,7 +151,7 @@ exports.setCompleted = async (req, res) => {
 };
 
 const getRandomQuestion = async (exam) => {
-    const usedQuestionIds = await User.getUsedQuestions(exam.assignTo);
+    const usedQuestionIds = await userService.getUsedQuestions(exam.assignTo);
 
     const selectedQuestions = await questionService.questionListForExam({
         exam,
@@ -310,7 +323,7 @@ exports.assignDeassignStudent = async (req, res) => {
                 parentId: req.user._id,
                 studentId: studentId,
             });
-        if (!checkParentStudentRelation) {
+        if (!checkParentStudentRelation.status) {
             return res.json({
                 status: false,
                 msg: "student not belong to you",
