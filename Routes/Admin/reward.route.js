@@ -12,9 +12,9 @@ Router.post(
     validator,
     RewardController.create
 );
-Router.get("/edit/:rewardId", RewardController.edit);
+Router.get("/get-details/:rewardId", RewardController.getDetails);
 Router.post(
-    "/update/:rewardId",
+    "/update",
     rewardPicture.single("rewardImage"),
     updateReward,
     validator,

@@ -1,58 +1,98 @@
-const Reward = require("../../Models/Reward");
+const rewardService = require("../../Services/reward.service");
 
 exports.list = async (req, res) => {
-    const rewards = await Reward.find({});
+    try {
+        const rewards = await rewardService.list();
 
-    return res.json({
-        status: true,
-        data: rewards,
-    });
+        return res.json({
+            status: true,
+            data: rewards,
+        });
+    } catch (error) {
+        return res.json({
+            status: false,
+            message: error.message,
+        });
+    }
 };
 
 exports.create = async (req, res) => {
-    const { name } = req.body;
-    console.log(name);
+    try {
+        const { user, body, file } = req;
 
-    const reward = await Reward.create({
-        name: name,
-        userId: req.user._id,
-    });
+        const reward = await rewardService.create({
+            user,
+            body,
+            file,
+        });
 
-    return res.json({
-        status: true,
-        data: reward,
-    });
+        return res.json({
+            status: true,
+            message: "Reward created successfully",
+            data: reward,
+        });
+    } catch (error) {
+        return res.json({
+            status: false,
+            message: error.message,
+        });
+    }
 };
 
-exports.edit = async (req, res) => {
-    const { rewardId } = req.params;
-    const details = await Reward.findOne({ _id: rewardId });
+exports.getDetails = async (req, res) => {
+    try {
+        const { rewardId } = req.params;
+        const details = await rewardService.details({ _id: rewardId });
 
-    return res.json({
-        status: true,
-        data: details,
-    });
+        return res.json({
+            status: true,
+            data: details,
+        });
+    } catch (error) {
+        return res.json({
+            status: false,
+            message: error.message,
+        });
+    }
 };
 
 exports.update = async (req, res) => {
-    const { rewardId, name } = req.body;
-    const updatedDetails = await Reward.findByIdAndUpdate(
-        { _id: rewardId },
-        { name: name },
-        { new: true }
-    );
+    try {
+        const { user, body, file } = req;
 
-    return res.json({
-        status: true,
-        data: updatedDetails,
-    });
+        const reward = await rewardService.update({
+            user,
+            body,
+            image: file,
+        });
+
+        return res.json({
+            status: true,
+            message: "Reward updated successfully",
+            data: reward,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.json({
+            status: false,
+            message: error.message,
+        });
+    }
 };
 
 exports.delete = async (req, res) => {
-    const { rewardId } = req.body;
-    await Reward.deleteOne({ _id: rewardId });
+    try {
+        const { rewardId } = req.params;
+        await rewardService.delete({ _id: rewardId });
 
-    return res.json({
-        status: true,
-    });
+        return res.json({
+            status: true,
+            message: "Reward deleted successfully",
+        });
+    } catch (error) {
+        return res.json({
+            status: false,
+            message: error.message,
+        });
+    }
 };

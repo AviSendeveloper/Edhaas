@@ -6,6 +6,7 @@ const SubjectRoutes = require("./subject.route");
 const TopicRoutes = require("./topic.route");
 const AgeGroupRoutes = require("./age-group.route");
 const QuestionContentRoutes = require("./question-content.route");
+const Reward = require("./reward.route");
 
 Router.use("/manegement/", MangementRoutes);
 Router.use("/board", BoardRoutes);
@@ -13,6 +14,7 @@ Router.use("/standard", StandradRoutes);
 Router.use("/subject", SubjectRoutes);
 Router.use("/topic", TopicRoutes);
 Router.use("/age-group", AgeGroupRoutes);
+Router.use("/Reward", Reward);
 
 // Question
 Router.use("/question-content", QuestionContentRoutes);

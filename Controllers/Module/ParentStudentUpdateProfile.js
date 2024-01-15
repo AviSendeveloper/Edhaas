@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs").promises;
 const fsSync = require("fs");
 const User = require("../../Models/User");
-const { log } = require("console");
+require("dotenv").config();
 
 /**
  *
@@ -15,16 +15,21 @@ module.exports = async (user, body, file) => {
     try {
         const { firstName, lastName, phoneNumber } = body;
         const image = file;
-        log("image ::: ", image);
         let updateObj = {};
 
         const userDetails = await User.findOne({ _id: user._id });
 
         // delete old file
         if (image) {
-            const oldImageUrl = userDetails.imageUrl;
+            let oldImageUrl = userDetails.imageUrl;
+            oldImageUrl = oldImageUrl.replace(process.env.BASE_URL, "");
             if (oldImageUrl !== null && oldImageUrl !== "") {
-                const oldFilePath = path.join(__dirname, "../../", oldImageUrl);
+                const oldFilePath = path.join(
+                    __dirname,
+                    "../../",
+                    "public",
+                    oldImageUrl
+                );
                 // check file exist or not
                 const isFileExist = fsSync.existsSync(oldFilePath);
                 if (isFileExist) {

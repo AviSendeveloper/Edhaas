@@ -40,7 +40,7 @@ const userSchema = new Schema(
             type: String,
             default: "",
             get: function (image) {
-                return path.join(process.env.BASE_URL, image);
+                return process.env.BASE_URL + image;
             },
         },
         role: {

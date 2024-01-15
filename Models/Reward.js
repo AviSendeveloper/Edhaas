@@ -4,13 +4,15 @@ const rewardSchema = new Schema(
     {
         name: {
             type: String,
-            unique: true,
             required: true,
         },
-        image: {
+        imageUrl: {
             type: String,
-            default: null,
+            default: "",
             trim: true,
+            get: function (image) {
+                return process.env.BASE_URL + image;
+            },
         },
         userId: {
             type: Schema.Types.ObjectId,
@@ -27,6 +29,8 @@ rewardSchema.virtual("id").get(function () {
 
 rewardSchema.set("toJSON", {
     virtuals: true,
+    getters: true,
+    setters: true,
     transform: function (doc, ret) {
         delete ret._id;
     },
