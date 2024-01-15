@@ -30,4 +30,4 @@ ageGroupSchema.set("toJSON", {
     },
 });
 
-module.exports = model("AgeGroup", ageGroupSchema);
+module.exports = model("age_groups", ageGroupSchema, "ageGroup");

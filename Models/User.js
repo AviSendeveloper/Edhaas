@@ -1,4 +1,6 @@
 const { Schema, model } = require("mongoose");
+const path = require("path");
+require("dotenv").config();
 
 const userSchema = new Schema(
     {
@@ -36,7 +38,10 @@ const userSchema = new Schema(
         },
         imageUrl: {
             type: String,
-            default: null,
+            default: "",
+            get: function (image) {
+                return path.join(process.env.BASE_URL, image);
+            },
         },
         role: {
             type: String,
@@ -84,6 +89,8 @@ userSchema.virtual("id").get(function () {
 
 userSchema.set("toJSON", {
     virtuals: true,
+    getters: true,
+    setters: true,
     transform: function (doc, ret) {
         delete ret._id;
     },

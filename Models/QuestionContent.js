@@ -67,4 +67,8 @@ const questionContentSchema = new Schema(
     { timestamps: true }
 );
 
-module.exports = model("QuestionContent", questionContentSchema);
+module.exports = model(
+    "question_content",
+    questionContentSchema,
+    "questionContent"
+);

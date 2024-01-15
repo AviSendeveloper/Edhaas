@@ -34,4 +34,4 @@ passwordResetSchema.set("toJSON", {
     },
 });
 
-module.exports = model("PasswordReset", passwordResetSchema);
+module.exports = model("password_reset", passwordResetSchema, "passwordReset");

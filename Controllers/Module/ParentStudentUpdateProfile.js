@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs").promises;
 const fsSync = require("fs");
 const User = require("../../Models/User");
+const { log } = require("console");
 
 /**
  *
@@ -14,6 +15,7 @@ module.exports = async (user, body, file) => {
     try {
         const { firstName, lastName, phoneNumber } = body;
         const image = file;
+        log("image ::: ", image);
         let updateObj = {};
 
         const userDetails = await User.findOne({ _id: user._id });
@@ -30,7 +32,7 @@ module.exports = async (user, body, file) => {
                 }
             }
 
-            updateObj.imageUrl = image.path;
+            updateObj.imageUrl = "image/" + image.filename;
         }
 
         updateObj.firstName = firstName;
