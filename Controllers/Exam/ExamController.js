@@ -64,6 +64,7 @@ exports.createExam = async (req, res) => {
 
             // Generate questions for exam
             selectedQuestions = await getRandomQuestion(exam);
+            logger.info(selectedQuestions.length);
 
             // check selected questions is equal to total question requested
             if (selectedQuestions.length != totalQuestionNumber)
