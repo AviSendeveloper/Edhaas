@@ -16,7 +16,7 @@ const { default: mongoose } = require("mongoose");
 exports.createExam = async (req, res) => {
     try {
         let exam;
-        // let session;
+        let selectedQuestions;
         const {
             examType,
             difficultyLevel,
@@ -63,7 +63,7 @@ exports.createExam = async (req, res) => {
             });
 
             // Generate questions for exam
-            const selectedQuestions = await getRandomQuestion(exam);
+            selectedQuestions = await getRandomQuestion(exam);
 
             // check selected questions is equal to total question requested
             if (selectedQuestions.length != totalQuestionNumber)
