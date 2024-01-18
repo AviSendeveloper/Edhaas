@@ -17,6 +17,7 @@ exports.createExam = async (req, res) => {
     try {
         let exam;
         let selectedQuestions;
+        let isError = false;
         const {
             examType,
             difficultyLevel,
@@ -39,10 +40,9 @@ exports.createExam = async (req, res) => {
         if (!checkParentStudentRelation.status)
             throw new Error("student not belong to you");
 
-        console.log("session started");
-        session = await mongoose.startSession();
+        // session = await mongoose.startSession();
         try {
-            session.startTransaction();
+            // session.startTransaction();
             exam = await examService.createExam({
                 user: req.user,
                 studentId,
@@ -64,11 +64,12 @@ exports.createExam = async (req, res) => {
 
             // Generate questions for exam
             selectedQuestions = await getRandomQuestion(exam);
-            logger.info(selectedQuestions.length);
 
             // check selected questions is equal to total question requested
-            if (selectedQuestions.length != totalQuestionNumber)
+            if (selectedQuestions.length != totalQuestionNumber) {
+                isError = true;
                 throw new Error("not enough questions");
+            }
 
             // Add questions to exam
             exam = await examService.addQuestionsToExam({
@@ -76,13 +77,16 @@ exports.createExam = async (req, res) => {
                 questions: selectedQuestions,
             });
 
-            await session.commitTransaction();
+            // await session.commitTransaction();
         } catch (error) {
-            await session.abortTransaction();
+            // await session.abortTransaction();
+            if (isError) {
+                await examService.delete(exam._id);
+            }
             throw error;
         } finally {
-            await session.endSession();
-            console.log("session ended");
+            // await session.endSession();
+            // console.log("session ended");
         }
 
         /**

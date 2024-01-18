@@ -125,6 +125,10 @@ exports.setCompleted = async ({ examId }) => {
     }
 };
 
+exports.delete = async (examId) => {
+    await Exam.deleteOne({ _id: examId });
+};
+
 exports.examDetails = async (examId) => {
     const details = await Exam.findOne({ _id: examId });
     return details;
