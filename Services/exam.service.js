@@ -117,7 +117,7 @@ exports.setCompleted = async ({ examId }) => {
         // update exam as completed
         await Exam.findByIdAndUpdate(examId, {
             $set: {
-                isCompleted: true,
+                isExamSetCompleted: true,
             },
         });
         return true;
