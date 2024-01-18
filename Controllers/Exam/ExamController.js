@@ -105,6 +105,7 @@ exports.createExam = async (req, res) => {
             status: true,
             msg: "Exam created successfully",
             questions: selectedQuestions,
+            examDetails: exam,
         });
     } catch (error) {
         errorLogger.error(error);
