@@ -62,6 +62,7 @@ exports.createExam = async ({
 };
 
 exports.assignReward = async ({ examId, rewardId }) => {
+    logger.info(`assigning reward ${rewardId} to exam ${examId}`);
     const updatedExam = await Exam.findByIdAndUpdate(
         examId,
         {
