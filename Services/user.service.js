@@ -81,7 +81,8 @@ exports.addParentIdInStudent = async ({ studentId, parentId }) => {
 exports.checkParentStudentRelation = async ({ parentId, studentId }) => {
     const studentDetails = await this.matchUser({ _id: studentId });
 
-    if (studentDetails.role !== "student") return { status: false };
+    if (studentDetails === null || studentDetails.role != "student")
+        return { status: false };
 
     const isParentMatch = studentDetails.parents.find((parent) => {
         return parent.parentId == parentId;

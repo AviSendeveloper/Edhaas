@@ -1,5 +1,11 @@
 const Router = require("express").Router();
 const ExamController = require("../../Controllers/Exam/ExamController");
+const {
+    createExam: createExamValidation,
+    assignReward: assignRewardValidation,
+    setCompleted: setCompletedValidation,
+} = require("../../Validations/Parent");
+const validator = require("../../Validations/Validator");
 
 // Router.post("/initiate", ExamController.initiateExam);
 // Router.post("/get-question", ExamController.getExamQuestions);
@@ -8,10 +14,25 @@ const ExamController = require("../../Controllers/Exam/ExamController");
 //     "/assigning-deassigning-student",
 //     ExamController.assignDeassignStudent
 // );
-Router.post("/create", ExamController.createExam);
-Router.post("/assign-reward", ExamController.assignReward);
+Router.post(
+    "/create",
+    createExamValidation,
+    validator,
+    ExamController.createExam
+);
+Router.post(
+    "/assign-reward",
+    assignRewardValidation,
+    validator,
+    ExamController.assignReward
+);
 // Router.post("/payment", ExamController.payment);
-Router.post("/set-completed", ExamController.setCompleted);
+Router.post(
+    "/set-completed",
+    setCompletedValidation,
+    validator,
+    ExamController.setCompleted
+);
 
 Router.get("/list", ExamController.examList);
 
