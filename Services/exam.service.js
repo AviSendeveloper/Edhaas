@@ -79,7 +79,9 @@ exports.assignReward = async ({ examId, rewardId }) => {
 exports.setCompleted = async ({ examId }) => {
     try {
         const exam = await Exam.findById(examId);
-        const questionIds = exam.questionAnswers.map((item) => item.questionId);
+        const questionIds = exam.questionAnswers.map((question) => {
+            return question.questionId;
+        });
         const studentId = exam.assignTo;
 
         // update usedQuestion for studentId in transaction

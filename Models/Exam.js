@@ -56,7 +56,7 @@ const examSchema = new Schema(
                     ref: "QuestionContent",
                 },
                 givenAnswer: Number,
-                markAchive: String,
+                markAchive: Number,
             },
         ],
         totalQuestionNumber: Number,

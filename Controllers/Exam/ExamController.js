@@ -71,10 +71,14 @@ exports.createExam = async (req, res) => {
                 throw new Error("not enough questions");
             }
 
+            const selectedQuestionIds = selectedQuestions.map((question) => {
+                return { questionId: question._id };
+            });
+
             // Add questions to exam
             exam = await examService.addQuestionsToExam({
                 examId: exam._id,
-                questions: selectedQuestions,
+                questions: selectedQuestionIds,
             });
 
             // await session.commitTransaction();

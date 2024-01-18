@@ -104,7 +104,7 @@ exports.updateUsedQuestions = async (studentId, questionIds) => {
     try {
         const response = await User.findByIdAndUpdate(
             { _id: studentId },
-            { $push: { usedQuestions: { $each: questionIds } } }
+            { $addToSet: { usedQuestions: { $each: questionIds } } }
         );
 
         return true;
