@@ -289,10 +289,9 @@ exports.questionListForExam = async ({ exam, usedQuestionIds }) => {
 
 exports.updateClickMultiQuestions = async ({ questionId, value = 1 }) => {
     try {
-        await QuestionContent.findOneAndUpdate(
-            { _id: questionId },
-            { $inc: { totalClicked: value } },
-            { new: true }
+        await QuestionContent.updateMany(
+            { _id: { $in: questionId } },
+            { $inc: { totalClicked: value } }
         );
         return true;
     } catch (error) {
