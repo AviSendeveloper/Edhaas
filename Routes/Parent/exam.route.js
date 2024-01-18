@@ -3,7 +3,7 @@ const ExamController = require("../../Controllers/Exam/ExamController");
 const {
     createExam: createExamValidation,
     assignReward: assignRewardValidation,
-    setCompleted: setCompletedValidation,
+    setExamComplete: setExamCompleteValidation,
 } = require("../../Validations/Parent");
 const validator = require("../../Validations/Validator");
 
@@ -29,7 +29,7 @@ Router.post(
 // Router.post("/payment", ExamController.payment);
 Router.post(
     "/set-completed",
-    setCompletedValidation,
+    setExamCompleteValidation,
     validator,
     ExamController.setCompleted
 );
