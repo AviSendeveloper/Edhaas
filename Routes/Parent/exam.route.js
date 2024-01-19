@@ -36,6 +36,7 @@ Router.post(
 
 Router.get("/list", ExamController.examList);
 
+Router.get("/get-reward", ExamController.getReward);
 Router.get("/get-board", ExamController.getBoard);
 Router.get("/get-standard", ExamController.getStandard);
 Router.get("/get-subject", ExamController.getSubject);

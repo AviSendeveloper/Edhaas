@@ -12,6 +12,7 @@ const {
     internalErrorLoger: errorLogger,
 } = require("../../Config/WinstonLogger");
 const { default: mongoose } = require("mongoose");
+const Reward = require("../../Models/Reward");
 
 exports.createExam = async (req, res) => {
     try {
@@ -376,6 +377,21 @@ exports.examList = async (req, res) => {
         return res.json({
             status: true,
             data: exams,
+        });
+    } catch (error) {
+        return res.json({
+            status: false,
+            msg: "Something went wrong",
+        });
+    }
+};
+
+exports.getReward = async (req, res) => {
+    try {
+        const rewardList = await Reward.find({});
+        return res.json({
+            status: true,
+            data: rewardList,
         });
     } catch (error) {
         return res.json({
