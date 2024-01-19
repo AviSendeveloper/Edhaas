@@ -49,4 +49,21 @@ Router.use("/api/student", isAuth, isStudent, StudentRoute);
 Router.use("/api/admin", isAuth, isAdmin, AdminRoutes);
 Router.use("/api/creator", isAuth, isCreator, CreatorRoutes);
 
+// url not found route
+Router.use("/", (req, res) => {
+    return res.json({
+        status: false,
+        msg: `${req.url} url not found`,
+    });
+});
+
+// error middleware in route
+Router.use((error, req, res, next) => {
+    errorLogger.error(error);
+    return res.json({
+        status: false,
+        msg: error.message,
+    });
+});
+
 module.exports = Router;
