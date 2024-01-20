@@ -1,8 +1,8 @@
 const User = require("../Models/User");
 
-exports.send = async (senderId, revicerId) => {
+exports.send = async ({ senderId, reciverId }) => {
     const result = await User.findOneAndUpdate(
-        { _id: revicerId },
+        { _id: reciverId },
         {
             $push: {
                 invitation: {
@@ -18,14 +18,16 @@ exports.send = async (senderId, revicerId) => {
 exports.showList = async (userId) => {
     const lists = await User.findOne({ _id: userId })
         .populate("invitation.senderId")
-        .select({ invitation: 1 });
+        .select({
+            invitation: 1,
+        });
     return lists;
 };
 
 exports.acceptRequest = async (userId, senderId) => {
     const response = await User.findOneAndUpdate(
         { _id: userId, "invitation.senderId": senderId },
-        { $set: { "invitation.$.status": "accepted" } },
+        { $pull: { invitation: { senderId: senderId } } },
         { new: true }
     );
     return response;
