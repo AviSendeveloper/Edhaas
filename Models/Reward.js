@@ -6,6 +6,9 @@ const rewardSchema = new Schema(
             type: String,
             required: true,
         },
+        description: {
+            type: String,
+        },
         imageUrl: {
             type: String,
             default: "",
