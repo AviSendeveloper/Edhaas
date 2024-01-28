@@ -261,25 +261,91 @@ exports.updateQuestion = async ({
 };
 
 exports.questionListForExam = async ({ exam, usedQuestionIds }) => {
+    let questions = [];
+    const { type, board, standard, subject, topic, ageGroup, difficultyLevel } =
+        exam.info;
+
+    if (type === "academic") {
+        questions = await exports.academicQuestionList({
+            type,
+            board,
+            standard,
+            subject,
+            topic,
+            difficultyLevel,
+            usedQuestionIds,
+            totalQuestionNumber: exam.totalQuestionNumber,
+        });
+    } else if (type === "emotional_quotient" || type === "social_behaviour") {
+        questions = await exports.emotionalOrSocialQuestionList({
+            type,
+            ageGroup,
+            difficultyLevel,
+            usedQuestionIds,
+            totalQuestionNumber: exam.totalQuestionNumber,
+        });
+    }
+
+    return questions;
+};
+
+exports.academicQuestionList = async ({
+    type,
+    board,
+    standard,
+    subject,
+    topic,
+    difficultyLevel,
+    usedQuestionIds,
+    totalQuestionNumber,
+}) => {
     const questions = await QuestionContent.aggregate([
         // $match
         {
             $match: {
                 _id: { $nin: usedQuestionIds },
-                "meta.examType": exam.info.type,
-                "meta.boardId": new ObjectId(exam.info.board.toString()),
-                "meta.standardId": new ObjectId(exam.info.standard.toString()),
-                "meta.subjectId": new ObjectId(exam.info.subject.toString()),
-                "meta.topicId": new ObjectId(exam.info.topic.toString()),
-                "meta.ageGroupId": new ObjectId(exam.info.ageGroup.toString()),
-                "meta.difficultyLevel": exam.info.difficultyLevel,
+                "meta.examType": type,
+                "meta.boardId": new ObjectId(board.toString()),
+                "meta.standardId": new ObjectId(standard.toString()),
+                "meta.subjectId": new ObjectId(subject.toString()),
+                "meta.topicId": new ObjectId(topic.toString()),
+                "meta.difficultyLevel": difficultyLevel,
                 isPublic: true,
             },
         },
         // select random using $sample
         {
             $sample: {
-                size: exam.totalQuestionNumber,
+                size: totalQuestionNumber,
+            },
+        },
+    ]);
+
+    return questions;
+};
+
+exports.emotionalOrSocialQuestionList = async ({
+    type,
+    ageGroup,
+    difficultyLevel,
+    usedQuestionIds,
+    totalQuestionNumber,
+}) => {
+    const questions = await QuestionContent.aggregate([
+        // $match
+        {
+            $match: {
+                _id: { $nin: usedQuestionIds },
+                "meta.examType": type,
+                "meta.ageGroupId": new ObjectId(ageGroup.toString()),
+                "meta.difficultyLevel": difficultyLevel,
+                isPublic: true,
+            },
+        },
+        // select random using $sample
+        {
+            $sample: {
+                size: totalQuestionNumber,
             },
         },
     ]);
