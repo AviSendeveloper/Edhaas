@@ -12,7 +12,7 @@ module.exports = [
     body("email", "Invalid email type")
         .trim()
         .isEmail()
-        .normalizeEmail()
+        .toLowerCase()
         .custom(async (email) => {
             const response = await UserService.isEmailExist(email);
             if (response) throw new Error(`${email} already registered`);
