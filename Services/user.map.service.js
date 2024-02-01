@@ -32,21 +32,44 @@ exports.getParentMap = async (studentId) => {
                                 $mergeObjects: [
                                     "$$parent",
                                     {
-                                        parentDetails: {
-                                            $arrayElemAt: [
-                                                {
-                                                    $filter: {
-                                                        input: "$parentDetails",
-                                                        as: "detail",
-                                                        cond: {
-                                                            $eq: [
-                                                                "$$detail._id",
-                                                                "$$parent.parentId",
-                                                            ],
-                                                        },
+                                        // parentDetails: {
+                                        $arrayElemAt: [
+                                            {
+                                                $filter: {
+                                                    input: "$parentDetails",
+                                                    as: "detail",
+                                                    cond: {
+                                                        $eq: [
+                                                            "$$detail._id",
+                                                            "$$parent.parentId",
+                                                        ],
                                                     },
                                                 },
-                                                0,
+                                            },
+                                            0,
+                                        ],
+                                        // },
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                $addFields: {
+                    parents: {
+                        $map: {
+                            input: "$parents",
+                            as: "parent",
+                            in: {
+                                $mergeObjects: [
+                                    "$$parent",
+                                    {
+                                        imageUrl: {
+                                            $concat: [
+                                                process.env.BASE_URL,
+                                                "$$parent.imageUrl",
                                             ],
                                         },
                                     },
@@ -91,6 +114,30 @@ exports.getStudentMap = async (parentId) => {
             {
                 $project: {
                     "students.parents": 0,
+                },
+            },
+            // stage 4: Manually add the base URL to each imageUrl in the students array
+            {
+                $addFields: {
+                    students: {
+                        $map: {
+                            input: "$students",
+                            as: "student",
+                            in: {
+                                $mergeObjects: [
+                                    "$$student",
+                                    {
+                                        imageUrl: {
+                                            $concat: [
+                                                process.env.BASE_URL,
+                                                "$$student.imageUrl",
+                                            ],
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    },
                 },
             },
         ]);
