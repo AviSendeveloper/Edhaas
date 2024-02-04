@@ -8,7 +8,6 @@ module.exports = [
     body("email", "Invalid email type")
         .trim()
         .isEmail()
-        .normalizeEmail()
         .custom(async (email) => {
             const response = await USerService.isEmailExist(email);
             if (!response) throw new Error(`${email} not found`);
