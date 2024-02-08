@@ -1,7 +1,10 @@
 const Topic = require("../../Models/Topic");
 
 exports.list = async (req, res) => {
-    const topics = await Topic.find({});
+    const { subjectId } = req.query;
+    const query = subjectId ? { subjectId: subjectId } : {};
+
+    const topics = await Topic.find(query);
 
     return res.json({
         status: true,
