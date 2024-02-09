@@ -39,7 +39,7 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                 },
             },
             {
-                $unwind: "$creatorId",
+                $unwind: { path: "$creatorId" },
             },
             {
                 $lookup: {
@@ -50,7 +50,10 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                 },
             },
             {
-                $unwind: "$meta.boardId",
+                $unwind: {
+                    path: "$meta.boardId",
+                    preserveNullAndEmptyArrays: true,
+                },
             },
             {
                 $lookup: {
@@ -61,7 +64,10 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                 },
             },
             {
-                $unwind: "$meta.standardId",
+                $unwind: {
+                    path: "$meta.standardId",
+                    preserveNullAndEmptyArrays: true,
+                },
             },
             {
                 $lookup: {
@@ -72,7 +78,10 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                 },
             },
             {
-                $unwind: "$meta.subjectId",
+                $unwind: {
+                    path: "$meta.subjectId",
+                    preserveNullAndEmptyArrays: true,
+                },
             },
             {
                 $lookup: {
@@ -83,7 +92,10 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                 },
             },
             {
-                $unwind: "$meta.topicId",
+                $unwind: {
+                    path: "$meta.topicId",
+                    preserveNullAndEmptyArrays: true,
+                },
             },
             {
                 $lookup: {
@@ -94,12 +106,15 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                 },
             },
             {
-                $unwind: "$meta.ageGroupId",
+                $unwind: {
+                    path: "$meta.ageGroupId",
+                    preserveNullAndEmptyArrays: true,
+                },
             },
             // match stage
             {
                 $match: {
-                    // "creatorId.role": role,
+                    // "creatorId.role": "admin",
                     ...matchQuery,
                 },
             },
@@ -129,13 +144,17 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                     status: 1,
                 },
             },
-            {
-                $limit: 10,
-            },
+            // {
+            //     $limit: 10,
+            // },
+            // {
+            //     $count: "total",
+            // },
         ]);
 
         return questionList;
     } catch (error) {
+        console.log(error);
         console.error(error.message);
         throw error;
     }
