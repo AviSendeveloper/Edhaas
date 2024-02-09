@@ -87,7 +87,7 @@ exports.allQuestionList = async ({ role, creatorId }) => {
             },
             {
                 $lookup: {
-                    from: "agegroups",
+                    from: "ageGroup",
                     localField: "meta.ageGroupId",
                     foreignField: "_id",
                     as: "meta.ageGroupId",
