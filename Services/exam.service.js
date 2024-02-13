@@ -280,3 +280,39 @@ exports.updateExamComplete = async (examId, status = true) => {
 
     return updatedExam;
 };
+
+exports.questionOfExam = async (examId) => {
+    const exam = await Exam.findById(examId)
+        .populate({
+            path: "questionAnswers.questionId",
+            select: "correctOption",
+        })
+        .select({
+            "questionAnswers._id": 0,
+        });
+    return exam;
+};
+
+exports.updateExamForStudent = async ({
+    examId,
+    updatedQuestionAnswers,
+    totalMarks,
+    passStatus,
+    attendStatus,
+}) => {
+    const updatedExam = await Exam.findByIdAndUpdate(
+        examId,
+        {
+            $set: {
+                questionAnswers: updatedQuestionAnswers,
+                totalMarkAchive: totalMarks,
+                passStatus,
+                attendStatus,
+            },
+        },
+        {
+            new: true,
+        }
+    );
+    return updatedExam;
+};
