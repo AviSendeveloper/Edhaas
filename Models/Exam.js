@@ -25,7 +25,7 @@ const examSchema = new Schema(
             },
             ageGroup: {
                 type: Schema.Types.ObjectId,
-                ref: "AgeGroup",
+                ref: "age_groups",
             },
             subject: {
                 type: Schema.Types.ObjectId,
@@ -53,7 +53,7 @@ const examSchema = new Schema(
             {
                 questionId: {
                     type: Schema.Types.ObjectId,
-                    ref: "QuestionContent",
+                    ref: "question_content",
                 },
                 givenAnswer: Number,
                 markAchive: Number,
@@ -87,7 +87,7 @@ const examSchema = new Schema(
         rewardId: [
             {
                 type: Schema.Types.ObjectId,
-                ref: "Reward",
+                ref: "reward",
             },
         ],
         isExamSetCompleted: {

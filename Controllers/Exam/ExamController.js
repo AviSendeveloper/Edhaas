@@ -372,7 +372,7 @@ exports.assignDeassignStudent = async (req, res) => {
 exports.examList = async (req, res) => {
     try {
         const userId = req.user._id;
-        const exams = await examService.list(userId);
+        const exams = await examService.listForParent(userId);
 
         return res.json({
             status: true,

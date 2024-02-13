@@ -136,6 +136,29 @@ exports.examDetails = async (examId) => {
     return details;
 };
 
+exports.examDetailsForStudent = async (examId) => {
+    const details = await Exam.findOne({ _id: examId })
+        .populate({ path: "info.board", select: "name" })
+        .populate({ path: "info.standard", select: "name" })
+        .populate({ path: "info.ageGroup", select: "startAge endAge" })
+        .populate({ path: "info.subject", select: "name" })
+        .populate({ path: "info.topic", select: "name" })
+        .populate({ path: "creatorId", select: "firstName lastName email" })
+        .populate({ path: "rewardId", select: "name description imageUrl" })
+        .populate({
+            path: "questionAnswers.questionId",
+            select: "options question -_id",
+        })
+        .select({
+            "questionAnswers._id": 0,
+            passStatus: 0,
+            isExamSetCompleted: 0,
+            questionWeightage: 0,
+            assignTo: 0,
+        });
+    return details;
+};
+
 exports.updateSelectReject = async ({ examId, questionId, isSelected }) => {
     let updatedExam = {};
     if (isSelected) {
@@ -226,10 +249,28 @@ exports.updateStudentAssigning = async ({ examId, studentId, isAssigning }) => {
     return true;
 };
 
-exports.list = async (userId) => {
-    const exams = await Exam.find({ creatorId: userId });
-
+exports.listForParent = async (parentId) => {
+    const exams = await Exam.find({ creatorId: parentId });
     return exams;
+};
+
+exports.listForStudent = async (studentId) => {
+    const list = await Exam.find({ assignTo: studentId })
+        .populate({ path: "info.board", select: "name" })
+        .populate({ path: "info.standard", select: "name" })
+        .populate({ path: "info.ageGroup", select: "startAge endAge" })
+        .populate({ path: "info.subject", select: "name" })
+        .populate({ path: "info.topic", select: "name" })
+        .populate({ path: "creatorId", select: "firstName lastName email" })
+        .populate({ path: "rewardId", select: "name description imageUrl" })
+        .select({
+            questionAnswers: 0,
+            questionWeightage: 0,
+            totalMarkAchive: 0,
+            passStatus: 0,
+            isExamSetCompleted: 0,
+        });
+    return list;
 };
 
 exports.updateExamComplete = async (examId, status = true) => {
