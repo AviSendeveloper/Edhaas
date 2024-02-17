@@ -142,6 +142,7 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                         difficultyLevel: 1,
                     },
                     status: 1,
+                    createdAt: 1,
                 },
             },
             // {
