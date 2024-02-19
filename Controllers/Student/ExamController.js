@@ -1,4 +1,5 @@
 const examService = require("../../Services/exam.service");
+const userService = require("../../Services/user.service");
 
 exports.examList = async (req, res) => {
     const userId = req.user._id;
@@ -27,6 +28,7 @@ exports.submitExam = async (req, res) => {
 
     const exam = await examService.questionOfExam(examId);
 
+    // check exam exist or not
     if (!exam) {
         return res.status(400).json({
             status: 400,
@@ -34,6 +36,7 @@ exports.submitExam = async (req, res) => {
         });
     }
 
+    // check attendence status
     if (exam.attendStatus) {
         return res.status(403).json({
             status: false,
@@ -41,15 +44,16 @@ exports.submitExam = async (req, res) => {
         });
     }
 
-    if (
-        new Date(exam.timeDetails.end).getTime() <
-        new Date(submittedTime).getTime()
-    ) {
-        return res.status(403).json({
-            status: false,
-            message: "Time for submission expired",
-        });
-    }
+    // // check student allow to submit by submited time
+    // if (
+    //     new Date(exam.timeDetails.end).getTime() <
+    //     new Date(submittedTime).getTime()
+    // ) {
+    //     return res.status(403).json({
+    //         status: false,
+    //         message: "Time for submission expired",
+    //     });
+    // }
 
     // get exam questions
     const examQuestions = exam.questionAnswers;
@@ -80,12 +84,21 @@ exports.submitExam = async (req, res) => {
         }
     });
 
+    let passStatus = totalMarks >= exam.cutoffMarks ? true : false;
+
+    if (passStatus) {
+        await userService.assignReward({
+            rewardId,
+            studentId: assignTo,
+        });
+    }
+
     // update exam collection
     const updatedExam = await examService.updateExamForStudent({
         examId: examId,
         updatedQuestionAnswers: updatedQuestionAnswers,
         totalMarks: totalMarks,
-        passStatus: totalMarks >= exam.cutoffMarks ? true : false,
+        passStatus: passStatus,
         attendStatus: true,
     });
 

@@ -1,4 +1,5 @@
 const User = require("../Models/User");
+const rewardService = require("../Services/reward.service");
 
 /**
  * create new user
@@ -111,4 +112,25 @@ exports.updateUsedQuestions = async (studentId, questionIds) => {
     } catch (error) {
         return false;
     }
+};
+
+exports.assignReward = async ({ studentId, rewardId }) => {
+    const rewardDetaails = await rewardService.details({ _id: rewardId });
+
+    const response = await User.findByIdAndUpdate(
+        { _id: studentId },
+        {
+            $push: {
+                assignedRewards: {
+                    rewardId: rewardId,
+                    name: rewardDetaails.name,
+                    description: rewardDetaails.description,
+                    imageUrl: rewardDetaails.imageUrl,
+                    assignedAt: new Date(),
+                },
+            },
+        }
+    );
+
+    return;
 };
