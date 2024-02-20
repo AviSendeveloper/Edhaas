@@ -88,8 +88,8 @@ exports.submitExam = async (req, res) => {
 
     if (passStatus) {
         await userService.assignReward({
-            rewardId,
-            studentId: assignTo,
+            rewardId: exam.rewardId[0],
+            studentId: exam.assignTo,
         });
     }
 

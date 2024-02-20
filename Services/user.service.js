@@ -134,3 +134,35 @@ exports.assignReward = async ({ studentId, rewardId }) => {
 
     return;
 };
+
+exports.assignedRewardList = async (userId) => {
+    const userDetils = await User.findById(userId);
+    return userDetils.assignedRewards;
+};
+
+exports.assignedRewardDetails = async ({ userId, rewardObjId }) => {
+    // rewardObjId is _id of assignedRewards object in users collection
+    const userDetils = await User.findById(userId);
+    const rewardDetails = userDetils.assignedRewards.find((reward) => {
+        return reward._id.toString() === rewardObjId;
+    });
+
+    if (!rewardDetails) throw new Error("Reward not found");
+    return rewardDetails;
+};
+
+exports.useAssignedReward = async ({ userId, rewardObjId }) => {
+    // rewardObjId is _id of assignedRewards object in users collection
+    const userDetils = await User.findByIdAndUpdate(
+        userId,
+        {
+            $pull: {
+                assignedRewards: {
+                    _id: rewardObjId,
+                },
+            },
+        },
+        { new: true }
+    );
+    return userDetils.assignedRewards;
+};
