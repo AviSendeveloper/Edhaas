@@ -4,10 +4,16 @@ const validator = require("../../Validations/Validator");
 const {
     validateQuestionContent,
     isQuestionIdExist,
+    validateQuestionListParams,
 } = require("../../Validations/QuestionContent");
 const isAllowUpdateQuestion = require("../../Middlewares/isAllowUpdateQuestion.middleware");
 
-Router.get("/all-list", QuestionContentController.allList);
+Router.get(
+    "/all-list",
+    validateQuestionListParams,
+    validator,
+    QuestionContentController.allList
+);
 Router.get("/list", QuestionContentController.list);
 Router.post(
     "/create",

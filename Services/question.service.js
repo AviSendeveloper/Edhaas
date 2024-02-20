@@ -1,35 +1,59 @@
 const QuestionContent = require("../Models/QuestionContent");
 const { ObjectId } = require("mongodb");
 
-exports.allQuestionList = async ({ role, creatorId }) => {
+exports.allQuestionList = async ({
+    role,
+    creatorId,
+    examType,
+    ageGroupId,
+    subjectId,
+    difficultyLevel,
+    limit,
+    skip,
+}) => {
     try {
-        // let matchQuery = {};
-        // if (query.length !== 0 && query.role !== null) {
-        //     matchQuery = {
-        //         "creatorId.role": query.role,
-        //     };
-        // }
-
-        const conditionArr = [];
+        const matchConditionArr = [];
         let matchQuery = {};
+        const filterConditionArr = [];
+        let filterQuery = {};
 
-        if (role !== "" && role !== undefined) {
-            conditionArr.push({ "creatorId.role": role });
-        }
-        if (creatorId !== "" && creatorId !== undefined) {
-            conditionArr.push({ "creatorId._id": new ObjectId(creatorId) });
-        }
+        // match query
+        if (role !== "" && role !== undefined)
+            matchConditionArr.push({ "creatorId.role": role });
+        if (creatorId !== "" && creatorId !== undefined)
+            matchConditionArr.push({
+                "creatorId._id": new ObjectId(creatorId),
+            });
 
-        if (conditionArr.length > 1) {
-            matchQuery.$or = conditionArr;
+        if (matchConditionArr.length > 1) {
+            matchQuery.$or = matchConditionArr;
         } else {
-            matchQuery = conditionArr[0];
+            matchQuery = matchConditionArr[0];
         }
 
-        console.log(matchQuery);
+        // filter query
+        if (examType) filterConditionArr.push({ "meta.examType": examType });
+        if (ageGroupId)
+            filterConditionArr.push({
+                "meta.ageGroupId": new ObjectId(ageGroupId),
+            });
+        if (subjectId)
+            filterConditionArr.push({
+                "meta.subjectId": new ObjectId(subjectId),
+            });
+        if (difficultyLevel)
+            filterConditionArr.push({
+                "meta.difficultyLevel": difficultyLevel,
+            });
 
-        const questionList = await QuestionContent.aggregate([
-            // lookup/relationship all fields
+        if (filterConditionArr.length > 1) {
+            filterQuery.$or = filterConditionArr;
+        } else {
+            filterQuery = filterConditionArr[0];
+        }
+
+        const queryAggregationStages = [
+            // lookup/relationship creatorId field with users collection
             {
                 $lookup: {
                     from: "users",
@@ -41,6 +65,28 @@ exports.allQuestionList = async ({ role, creatorId }) => {
             {
                 $unwind: { path: "$creatorId" },
             },
+            // match by creatorId and role
+            {
+                $match: {
+                    ...matchQuery,
+                },
+            },
+            // match by other filter/parameter
+            {
+                $match: { ...filterQuery },
+            },
+        ];
+
+        const questionCount = await QuestionContent.aggregate([
+            ...queryAggregationStages,
+            {
+                $count: "questionCount",
+            },
+        ]);
+
+        const questionList = await QuestionContent.aggregate([
+            ...queryAggregationStages,
+            // lookup/relationship all fields
             {
                 $lookup: {
                     from: "boards",
@@ -111,13 +157,6 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                     preserveNullAndEmptyArrays: true,
                 },
             },
-            // match stage
-            {
-                $match: {
-                    // "creatorId.role": "admin",
-                    ...matchQuery,
-                },
-            },
             // project/select fields
             {
                 $project: {
@@ -145,15 +184,15 @@ exports.allQuestionList = async ({ role, creatorId }) => {
                     createdAt: 1,
                 },
             },
-            // {
-            //     $limit: 10,
-            // },
-            // {
-            //     $count: "total",
-            // },
+            {
+                $skip: skip,
+            },
+            {
+                $limit: +limit,
+            },
         ]);
 
-        return questionList;
+        return [questionList, questionCount[0].questionCount];
     } catch (error) {
         console.log(error);
         console.error(error.message);
@@ -161,8 +200,10 @@ exports.allQuestionList = async ({ role, creatorId }) => {
     }
 };
 
-exports.questionList = async (userId) => {
+exports.questionList = async (userId, { limit, skip }) => {
     const questionList = await QuestionContent.find({ creatorId: userId })
+        .skip(skip)
+        .limit(limit)
         .populate({ path: "meta.boardId", select: "name" })
         .populate({ path: "meta.standardId", select: "name" })
         .populate({ path: "meta.subjectId", select: "name" })
@@ -171,6 +212,18 @@ exports.questionList = async (userId) => {
         .populate({ path: "meta.ageGroupId", select: "startAge endAge" });
 
     return questionList;
+};
+
+exports.questionCount = async ({ creatorId = null }) => {
+    let query = {};
+    if (!creatorId) {
+        query = {};
+    } else {
+        query = { creatorId: creatorId };
+    }
+
+    const questionCount = await QuestionContent.countDocuments(query);
+    return questionCount;
 };
 
 exports.createQuestion = async ({
@@ -383,4 +436,29 @@ exports.updateClickMultiQuestions = async ({ questionIds, value = 1 }) => {
     } catch (error) {
         return false;
     }
+};
+
+exports.totalQuestionClicked = async ({ creatorId }) => {
+    let query = {};
+    if (!creatorId) {
+        query = {};
+    } else {
+        query = { creatorId: new ObjectId(creatorId) };
+    }
+
+    const totalQuestionClicked = await QuestionContent.aggregate([
+        {
+            $match: {
+                ...query,
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                totalClicked: { $sum: "$totalClicked" },
+            },
+        },
+    ]);
+    console.log(totalQuestionClicked);
+    return totalQuestionClicked;
 };

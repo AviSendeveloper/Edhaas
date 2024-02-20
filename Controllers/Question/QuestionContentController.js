@@ -11,16 +11,43 @@ const {
 
 exports.allList = async (req, res) => {
     try {
-        const { role, creatorId } = req.query;
-
-        const allQuestionList = await questionContentService.allQuestionList({
-            role,
+        const {
             creatorId,
-        });
+            role,
+            examType,
+            ageGroupId,
+            subjectId,
+            difficultyLevel,
+            row = 10,
+            page = 1,
+        } = req.query;
+        // console.log(limit, page);
+
+        const limit = row;
+        const skip = (page - 1) * limit;
+
+        const [questionList, questionCount] =
+            await questionContentService.allQuestionList({
+                creatorId,
+                role,
+                examType,
+                ageGroupId,
+                subjectId,
+                difficultyLevel,
+                limit,
+                skip,
+            });
+
+        const pagination = {
+            total: questionCount,
+            row,
+            page,
+        };
 
         return res.json({
             status: true,
-            data: allQuestionList,
+            pagination: pagination,
+            data: questionList,
         });
     } catch (error) {
         errorLogger.error(error);
@@ -33,15 +60,41 @@ exports.allList = async (req, res) => {
 
 exports.list = async (req, res) => {
     try {
+        const userId = req.user._id;
+        const { row = 10, page = 1 } = req.query;
+
+        const limit = row;
+        const skip = (page - 1) * limit;
+
+        const clickedDetails =
+            await questionContentService.totalQuestionClicked({
+                creatorId: userId,
+            });
+        const totalQuestionClicked = clickedDetails[0].totalClicked;
+
+        const totalQuestions = await questionContentService.questionCount({
+            creatorId: userId,
+        });
+
+        const pagination = {
+            total: totalQuestions,
+            row: limit,
+            page,
+        };
+
         const questionList = await questionContentService.questionList(
-            req.user._id
+            req.user._id,
+            { limit, skip }
         );
 
         return res.json({
             status: true,
+            totalQuestionClicked: totalQuestionClicked,
+            paginationDetails: pagination,
             data: questionList,
         });
     } catch (error) {
+        console.log(error);
         errorLogger.error(error);
         return res.json({
             status: false,
