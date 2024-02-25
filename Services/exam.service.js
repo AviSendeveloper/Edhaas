@@ -147,7 +147,7 @@ exports.examDetailsForStudent = async (examId) => {
         .populate({ path: "rewardId", select: "name description imageUrl" })
         .populate({
             path: "questionAnswers.questionId",
-            select: "options question -_id",
+            select: "options question",
         })
         .select({
             "questionAnswers._id": 0,
