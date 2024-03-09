@@ -1,12 +1,30 @@
-const userService = require("../../Services/user.service");
+const Exam = require("../../Models/Exam");
+const notificationService = require("../../Services/notification.service");
 
 exports.rewardList = async (req, res) => {
     try {
         const userId = req.user._id;
-        const assignedRewardList = await userService.assignedRewardList(userId);
+        const exams = await Exam.find(
+            {
+                assignTo: userId,
+                passStatus: true,
+            },
+            {
+                _id: 1,
+                reward: 1,
+            }
+        ).lean(true);
+
+        const rewardList = exams.map((exam) => {
+            return {
+                examId: exam._id,
+                ...exam.reward,
+            };
+        });
+
         return res.json({
             status: true,
-            data: assignedRewardList,
+            data: rewardList,
         });
     } catch (error) {
         return res.json({
@@ -18,12 +36,11 @@ exports.rewardList = async (req, res) => {
 
 exports.rewardDetails = async (req, res) => {
     try {
-        const userId = req.user._id;
-        const rewardObjId = req.params.rewardId; // rewardObjId is _id of assignedRewards object in users collection
-        const rewardDetails = await userService.assignedRewardDetails({
-            userId,
-            rewardObjId,
+        const examId = req.params.examId;
+        const rewardDetails = await Exam.findById(examId, {
+            reward: 1,
         });
+
         return res.json({
             status: true,
             data: rewardDetails ? rewardDetails : null,
@@ -38,12 +55,28 @@ exports.rewardDetails = async (req, res) => {
 
 exports.useReward = async (req, res) => {
     try {
-        const userId = req.user._id;
-        const rewardObjId = req.params.rewardId;
-        const updatedRewards = await userService.useAssignedReward({
-            userId,
-            rewardObjId,
+        const examId = req.params.examId;
+        const updatedRewards = await Exam.findByIdAndUpdate(
+            examId,
+            {
+                $set: {
+                    "reward.isUsed": true,
+                },
+            },
+            {
+                new: true,
+            }
+        ).populate({
+            path: "assignTo",
+            select: "firstName lastName",
         });
+        console.log(updatedRewards);
+
+        await notificationService.send(
+            updatedRewards.creatorId,
+            `Reward used by ${updatedRewards.assignTo.firstName} ${updatedRewards.assignTo.lastName}`
+        );
+
         return res.json({
             status: true,
         });

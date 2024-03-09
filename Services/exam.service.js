@@ -61,12 +61,16 @@ exports.createExam = async ({
     }
 };
 
-exports.assignReward = async ({ examId, rewardId }) => {
+exports.assignReward = async ({ examId, title, description, imageUrl }) => {
     const updatedExam = await Exam.findByIdAndUpdate(
         examId,
         {
-            $push: {
-                rewardId: rewardId,
+            $set: {
+                reward: {
+                    title,
+                    description,
+                    imageUrl,
+                },
             },
         },
         {

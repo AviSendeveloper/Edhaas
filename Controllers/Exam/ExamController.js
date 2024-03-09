@@ -1,5 +1,7 @@
 const examService = require("../../Services/exam.service");
 const questionService = require("../../Services/question.service");
+const notificationService = require("../../Services/notification.service");
+const rewardService = require("../../Services/reward.service");
 const userService = require("../../Services/user.service");
 const Board = require("../../Models/Board");
 const Standard = require("../../Models/Standard");
@@ -13,6 +15,7 @@ const {
 } = require("../../Config/WinstonLogger");
 const { default: mongoose } = require("mongoose");
 const Reward = require("../../Models/Reward");
+const Exam = require("../../Models/Exam");
 
 exports.createExam = async (req, res) => {
     try {
@@ -123,11 +126,29 @@ exports.createExam = async (req, res) => {
 
 exports.assignReward = async (req, res) => {
     try {
-        const { examId, rewardId } = req.body;
+        let {
+            examId,
+            rewardId,
+            rewardTitle,
+            rewardDescription = null,
+            rewardImageUrl = undefined,
+        } = req.body;
+
+        if (rewardId) {
+            console.log(1);
+            const rewardDetails = await rewardService.details({
+                _id: rewardId,
+            });
+            rewardTitle = rewardDetails.title;
+            rewardDescription = rewardDetails.description;
+            rewardImageUrl = rewardDetails.imageUrl;
+        }
 
         const assignReward = await examService.assignReward({
             examId,
-            rewardId,
+            title: rewardTitle,
+            description: rewardDescription,
+            imageUrl: rewardImageUrl,
         });
 
         return res.json({
@@ -135,6 +156,7 @@ exports.assignReward = async (req, res) => {
             msg: "Reward assigned successfully",
         });
     } catch (error) {
+        console.log(error);
         errorLogger.error(error);
         return res.status(500).send({
             status: false,
@@ -148,6 +170,16 @@ exports.setCompleted = async (req, res) => {
         const { examId } = req.body;
         const setCompleted = await examService.setCompleted({ examId });
         if (!setCompleted) throw new Error("failed to set completed");
+
+        const examDetails = await Exam.findById(examId).populate({
+            path: "creatorId",
+        });
+        // send notification to student
+        await notificationService.send(
+            examDetails.assignTo,
+            `Exam created by ${examDetails.creatorId.firstName} ${examDetails.creatorId.lastName}`
+        );
+
         return res.json({
             status: true,
             msg: "Exam set completed successfully",

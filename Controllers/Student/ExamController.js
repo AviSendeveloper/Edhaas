@@ -1,5 +1,6 @@
+const Exam = require("../../Models/Exam");
 const examService = require("../../Services/exam.service");
-const userService = require("../../Services/user.service");
+const notificationService = require("../../Services/notification.service");
 
 exports.examList = async (req, res) => {
     const userId = req.user._id;
@@ -86,13 +87,6 @@ exports.submitExam = async (req, res) => {
 
     let passStatus = totalMarks >= exam.cutoffMarks ? true : false;
 
-    if (passStatus) {
-        await userService.assignReward({
-            rewardId: exam.rewardId[0],
-            studentId: exam.assignTo,
-        });
-    }
-
     // update exam collection
     const updatedExam = await examService.updateExamForStudent({
         examId: examId,
@@ -101,6 +95,16 @@ exports.submitExam = async (req, res) => {
         passStatus: passStatus,
         attendStatus: true,
     });
+
+    const examDetails = await Exam.findById(examId).populate({
+        path: "assignTo",
+    });
+
+    // send notification to parent
+    await notificationService.send(
+        examDetails.creatorId,
+        `Exam submitted successfully by ${examDetails.assignTo.firstName} ${examDetails.assignTo.lastName}`
+    );
 
     return res.json({
         examQuestions: examQuestions,

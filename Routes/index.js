@@ -2,6 +2,7 @@ const Router = require("express").Router();
 const AuthRoute = require("./auth.route");
 const ForgetResetPasswordRoute = require("./forget-reset-password.route");
 const ApplicationRoute = require("./application.route");
+const NotificationRoute = require("./notification.route");
 const ParentRoute = require("./Parent");
 const StudentRoute = require("./Student");
 const AdminRoutes = require("./Admin");
@@ -48,6 +49,7 @@ Router.use("/api/parent", isAuth, isParent, ParentRoute);
 Router.use("/api/student", isAuth, isStudent, StudentRoute);
 Router.use("/api/admin", isAuth, isAdmin, AdminRoutes);
 Router.use("/api/creator", isAuth, isCreator, CreatorRoutes);
+Router.use("/api/notification", isAuth, NotificationRoute);
 
 // url not found route
 Router.use("/", (req, res) => {

@@ -26,6 +26,7 @@ module.exports = [
             return true;
         }),
     body("rewardId", "Invalid rewardId")
+        .optional()
         .trim()
         .custom(async (rewardId) => {
             if (

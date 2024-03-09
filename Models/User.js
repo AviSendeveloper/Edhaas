@@ -77,15 +77,6 @@ const userSchema = new Schema(
                 ref: "QuestionContent",
             },
         ],
-        assignedRewards: [
-            {
-                rewardId: Schema.Types.ObjectId,
-                name: String,
-                description: String,
-                imageUrl: String,
-                assignedAt: Date,
-            },
-        ],
     },
     {
         timestamps: true,

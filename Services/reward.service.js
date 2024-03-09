@@ -18,9 +18,9 @@ exports.list = async () => {
 
 exports.create = async ({ user, body, file }) => {
     try {
-        const { name, description } = body;
+        const { title, description } = body;
         const reward = await Reward.create({
-            name: name,
+            title: title,
             description: description,
             userId: user._id,
             imageUrl: path.join("image/reward", file.filename),
@@ -41,7 +41,7 @@ exports.details = async (detailObj) => {
 
 exports.update = async ({ user, body, image }) => {
     try {
-        const { name, description, rewardId } = body;
+        const { title, description, rewardId } = body;
         let updateObj = {};
 
         const rewardDetails = await Reward.findOne({ _id: rewardId });
@@ -75,7 +75,7 @@ exports.update = async ({ user, body, image }) => {
             updateObj.imageUrl = path.join("image/reward", image.filename);
         }
 
-        updateObj.name = name;
+        updateObj.title = title;
         updateObj.description = description;
 
         const updatedRewardDetails = await Reward.findByIdAndUpdate(
