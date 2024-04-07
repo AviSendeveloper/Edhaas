@@ -8,6 +8,7 @@ const {
     routeLoger: logger,
     internalErrorLoger: errorLogger,
 } = require("../../Config/WinstonLogger");
+const OpenAI = require("openai");
 
 exports.allList = async (req, res) => {
     try {
@@ -291,6 +292,50 @@ exports.getAgeGroup = async (req, res) => {
         return res.json({
             status: true,
             msg: "Something went wrong",
+        });
+    }
+};
+
+exports.getOpenAIQuestions = async (req, res) => {
+    try {
+        const { prompt } = req.body;
+
+        const openai = new OpenAI({
+            apiKey: process.env.OPEN_AI_KEY,
+        });
+        const aiModel = process.env.OPEN_AI_MODEL;
+
+        // messages array
+        const messages = [
+            {
+                role: "system",
+                content: prompt,
+            },
+        ];
+
+        const completion = await openai.chat.completions.create({
+            model: aiModel,
+            response_format: { type: "json_object" },
+            temperature: 1,
+            max_tokens: 1000,
+            top_p: 1,
+            frequency_penalty: 0,
+            presence_penalty: 0,
+            messages,
+        });
+
+        const aiResponse = completion.choices[0].message.content;
+
+        // parse string into valid json
+        const json = JSON.parse(aiResponse);
+        console.log(json);
+
+        // return the questions json
+        return res.status(200).json(json);
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            status: false,
         });
     }
 };

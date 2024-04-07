@@ -30,5 +30,6 @@ Router.post(
     isAllowUpdateQuestion,
     QuestionContentController.update
 );
+Router.post("/get-openai-questions", QuestionContentController.getOpenAIQuestions);
 
 module.exports = Router;
