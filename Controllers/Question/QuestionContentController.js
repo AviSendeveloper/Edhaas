@@ -333,7 +333,8 @@ exports.getOpenAIQuestions = async (req, res) => {
         // return the questions json
         return res.status(200).json(json);
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        errorLogger.error(error);
         return res.status(500).json({
             status: false,
         });
