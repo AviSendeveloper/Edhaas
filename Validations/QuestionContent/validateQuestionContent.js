@@ -48,22 +48,24 @@ module.exports = [
                 throw new Error("Invalid topic Id");
         } else {
             // Define validation chain for non-academic type
-            const { ageGroupId, difficultyLevel } = req.body;
-
-            if (!ageGroupId || !difficultyLevel)
-                throw new Error("ageGroupId and difficultyLevel are required");
+            const { ageGroupId } = req.body;
 
             // AgeGroup
             if (!(await checkField(AgeGroup, ageGroupId)))
                 throw new Error("Invalid age group Id");
-
-            // AgeGroup
-            if (!DifficultyLevel.includes(difficultyLevel))
-                throw new Error("Invalid difficulty level");
         }
 
         return true;
     }),
+    body("difficultyLevel")
+        .trim()
+        .exists()
+        .custom((diffcultyLevel) => {
+            if (!DifficultyLevel.includes(diffcultyLevel)) {
+                throw new Error("Invalid difficulty level");
+            }
+            return true;
+        }),
     body("question").trim().exists(),
     body("options").custom((options) => {
         if (Object.entries(options).length !== 4)
