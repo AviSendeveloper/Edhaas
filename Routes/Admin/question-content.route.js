@@ -3,6 +3,7 @@ const QuestionContentController = require("../../Controllers/Question/QuestionCo
 const validator = require("../../Validations/Validator");
 const {
     validateQuestionContent,
+    validateMultipleQuestionContent,
     isQuestionIdExist,
     validateQuestionListParams,
 } = require("../../Validations/QuestionContent");
@@ -21,6 +22,12 @@ Router.post(
     validator,
     QuestionContentController.create
 );
+Router.post(
+    "/create-mulitiple-questions",
+    validateMultipleQuestionContent,
+    validator,
+    QuestionContentController.createMultipleQuestion
+);
 Router.get("/details/:questionId", QuestionContentController.details);
 Router.post(
     "/update",
@@ -30,6 +37,9 @@ Router.post(
     isAllowUpdateQuestion,
     QuestionContentController.update
 );
-Router.post("/get-openai-questions", QuestionContentController.getOpenAIQuestions);
+Router.post(
+    "/get-openai-questions",
+    QuestionContentController.getOpenAIQuestions
+);
 
 module.exports = Router;

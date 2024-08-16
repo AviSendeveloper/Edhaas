@@ -147,6 +147,52 @@ exports.create = async (req, res) => {
     }
 };
 
+exports.createMultipleQuestion = async (req, res) => {
+    try {
+        const {
+            questions,
+            // options,
+            // correctOption,
+            examType,
+            boardId,
+            standardId,
+            subjectId,
+            topicId,
+            ageGroupId,
+            difficultyLevel,
+        } = req.body;
+
+        questions.forEach(async ({ question, options, correctOption }) => {
+            const insertedQuestion =
+                await questionContentService.createQuestion({
+                    question,
+                    options,
+                    correctOption,
+                    examType,
+                    boardId,
+                    standardId,
+                    subjectId,
+                    topicId,
+                    ageGroupId,
+                    difficultyLevel,
+                    user: req.user,
+                });
+        });
+
+        return res.json({
+            status: true,
+            msg: "Questions created successfully",
+        });
+    } catch (error) {
+        console.log(error);
+        errorLogger.error(error);
+        return res.json({
+            status: false,
+            msg: "Something went wrong",
+        });
+    }
+};
+
 exports.details = async (req, res) => {
     try {
         const { questionId } = req.params;
