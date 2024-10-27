@@ -148,7 +148,7 @@ exports.examDetailsForStudent = async (examId) => {
         .populate({ path: "info.subject", select: "name" })
         .populate({ path: "info.topic", select: "name" })
         .populate({ path: "creatorId", select: "firstName lastName email" })
-        .populate({ path: "rewardId", select: "name description imageUrl" })
+        // .populate({ path: "rewardId", select: "name description imageUrl" })
         .populate({
             path: "questionAnswers.questionId",
             select: "options question",
@@ -266,7 +266,7 @@ exports.listForStudent = async (studentId) => {
         .populate({ path: "info.subject", select: "name" })
         .populate({ path: "info.topic", select: "name" })
         .populate({ path: "creatorId", select: "firstName lastName email" })
-        .populate({ path: "rewardId", select: "name description imageUrl" })
+        // .populate({ path: "rewardId", select: "name description imageUrl" })
         .select({
             questionAnswers: 0,
             questionWeightage: 0,
